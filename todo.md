@@ -69,3 +69,15 @@
 - [ ] Verify database performance with large datasets
 - [ ] Create checkpoint for deployment
 - [ ] Document system usage and setup
+
+
+## Current Sprint: Scan Configuration Page
+- [x] Build complete scan configuration page with form
+- [x] Implement target hotel selector
+- [x] Implement competitor hotels multi-select
+- [x] Add room type checkboxes (Room Only / With Breakfast)
+- [x] Add days forward input (default 60)
+- [x] Build schedule configuration (cron builder or time picker)
+- [x] Display list of existing scan configurations
+- [x] Add edit/delete functionality for scan configs
+- [x] Test scan configuration creation and editing
