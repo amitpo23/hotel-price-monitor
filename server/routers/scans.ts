@@ -121,9 +121,16 @@ export const scansRouter = router({
     start: protectedProcedure
       .input(z.object({ configId: z.number() }))
       .mutation(async ({ input }) => {
-        // Execute scan in background
-        const progress = await executeScan(input.configId);
-        return { success: true, scanId: progress.scanId };
+        try {
+          console.log(`[API] Starting scan for config ${input.configId}`);
+          // Execute scan in background
+          const progress = await executeScan(input.configId);
+          console.log(`[API] Scan started successfully, scanId: ${progress.scanId}`);
+          return { success: true, scanId: progress.scanId };
+        } catch (error) {
+          console.error(`[API] Error starting scan:`, error);
+          throw new Error(`Failed to start scan: ${error instanceof Error ? error.message : String(error)}`);
+        }
       }),
 
     // Get scan status

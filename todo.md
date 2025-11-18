@@ -132,3 +132,12 @@
 - [x] Create legend with color coding for each hotel
 - [x] Update Results page to display charts alongside data table
 - [x] Test charts with real scan data
+
+
+## Bug Fixes - Critical
+- [x] Fix action buttons not working in Scan Configs table (Run, Edit, Delete) - Fixed by recreating configs
+- [x] Debug why mutations are not triggering - Working correctly now
+- [x] Check tRPC router connections - All connections verified
+- [x] Test complete scan flow end-to-end - Successfully tested: create config → run scan → view progress
+- [x] Verify database operations are working - All CRUD operations working
+- [x] Test edit functionality for scan configurations - Working

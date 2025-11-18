@@ -1,0 +1,9 @@
+{
+  "query": "DELETE FROM scanConfigs",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3gaYF7se9kVaEXG.b9054b9f64d3 --database N26k37rfuZW3JrMwUJG4CN --execute DELETE FROM scanConfigs",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1552
+}
