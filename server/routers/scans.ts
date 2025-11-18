@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "../_core/trpc";
 import * as db from "../db";
+import { executeScan, getScanProgress } from "../services/scanService";
 
 export const scansRouter = router({
   // Scan Configuration Management
@@ -119,24 +120,16 @@ export const scansRouter = router({
     start: protectedProcedure
       .input(z.object({ configId: z.number() }))
       .mutation(async ({ input }) => {
-        // Create a new scan record
-        const result = await db.createScan({
-          scanConfigId: input.configId,
-          status: "pending",
-        });
-
-        const scanId = Number((result as any).insertId);
-
-        // TODO: Trigger background job to execute scan
-        // For now, just return the scan ID
-        return { success: true, scanId };
+        // Execute scan in background
+        const progress = await executeScan(input.configId);
+        return { success: true, scanId: progress.scanId };
       }),
 
     // Get scan status
     getStatus: protectedProcedure
       .input(z.object({ scanId: z.number() }))
       .query(async ({ input }) => {
-        return db.getScanById(input.scanId);
+        return getScanProgress(input.scanId);
       }),
 
     // List scans for a configuration

@@ -90,3 +90,16 @@
 - [x] Add formatting and styling to Excel output
 - [x] Create download button in Results page
 - [x] Test Excel export with sample data
+
+
+## Current Sprint: Price Scanning Engine
+- [x] Install Playwright for browser automation
+- [x] Create TypeScript script for Booking.com scraping
+- [x] Implement date range iteration (60 days forward)
+- [x] Extract prices for room types (room only / with breakfast)
+- [x] Handle availability detection
+- [x] Add error handling and retries
+- [x] Create scan service to orchestrate scraping
+- [x] Integrate scanning with tRPC API
+- [x] Add "Run Scan Now" button in UI
+- [x] Test end-to-end scanning flow

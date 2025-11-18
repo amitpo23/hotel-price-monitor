@@ -28,7 +28,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { trpc } from "@/lib/trpc";
-import { Calendar, Clock, Edit, Plus, Power, PowerOff, ScanLine, Trash2 } from "lucide-react";
+import { Calendar, Clock, Edit, Play, Plus, Power, PowerOff, ScanLine, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -78,6 +78,16 @@ export default function ScanConfigs() {
     onSuccess: (data) => {
       toast.success(`Schedule ${data.isEnabled ? "enabled" : "disabled"}`);
       refetchConfigs();
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const runScanMutation = trpc.scans.execute.start.useMutation({
+    onSuccess: (data) => {
+      toast.success(`Scan started! Scan ID: ${data.scanId}`);
+      toast.info("Scan is running in the background. Check Results page for updates.");
     },
     onError: (error) => {
       toast.error(error.message);
@@ -249,6 +259,15 @@ export default function ScanConfigs() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => runScanMutation.mutate({ configId: config.id })}
+                            disabled={runScanMutation.isPending}
+                            title="Run scan now"
+                          >
+                            <Play className="h-4 w-4" />
+                          </Button>
                           <Button
                             variant="ghost"
                             size="sm"
