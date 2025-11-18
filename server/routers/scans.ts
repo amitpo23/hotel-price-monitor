@@ -58,7 +58,8 @@ export const scansRouter = router({
           isActive: 1,
         });
 
-        const configId = Number((result as any).insertId);
+        // Drizzle returns an array with insertId in the first element
+        const configId = Number(result[0]?.insertId || (result as any).insertId);
 
         // Add hotels to config
         for (const hotelId of hotelIds) {

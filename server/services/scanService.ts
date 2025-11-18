@@ -38,7 +38,8 @@ export async function executeScan(configId: number): Promise<ScanProgress> {
     completedHotels: 0,
   });
 
-  const scanId = Number((scanResult as any).insertId);
+  // Drizzle returns an array with insertId in the first element
+  const scanId = Number(scanResult[0]?.insertId || (scanResult as any).insertId);
 
   const progress: ScanProgress = {
     scanId,

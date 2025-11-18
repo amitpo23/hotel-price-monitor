@@ -103,3 +103,8 @@
 - [x] Integrate scanning with tRPC API
 - [x] Add "Run Scan Now" button in UI
 - [x] Test end-to-end scanning flow
+
+
+## Bug Fixes
+- [x] Fix NaN error in scanConfigId when creating scan configuration
+- [x] Ensure insertId is properly extracted from database insert result
