@@ -25,4 +25,82 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// TODO: Add your tables here
+// Hotel management tables
+export const hotels = mysqlTable("hotels", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  bookingUrl: text("bookingUrl").notNull(),
+  location: varchar("location", { length: 255 }),
+  category: mysqlEnum("category", ["target", "competitor"]).default("competitor").notNull(),
+  isActive: int("isActive").default(1).notNull(),
+  notes: text("notes"),
+  createdBy: int("createdBy").notNull().references(() => users.id),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export const scanConfigs = mysqlTable("scanConfigs", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  targetHotelId: int("targetHotelId").notNull().references(() => hotels.id),
+  daysForward: int("daysForward").default(60).notNull(),
+  roomTypes: text("roomTypes").notNull(), // JSON array: ["room_only", "with_breakfast"]
+  isActive: int("isActive").default(1).notNull(),
+  createdBy: int("createdBy").notNull().references(() => users.id),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export const scanConfigHotels = mysqlTable("scanConfigHotels", {
+  id: int("id").autoincrement().primaryKey(),
+  scanConfigId: int("scanConfigId").notNull().references(() => scanConfigs.id, { onDelete: "cascade" }),
+  hotelId: int("hotelId").notNull().references(() => hotels.id, { onDelete: "cascade" }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export const scanSchedules = mysqlTable("scanSchedules", {
+  id: int("id").autoincrement().primaryKey(),
+  scanConfigId: int("scanConfigId").notNull().references(() => scanConfigs.id, { onDelete: "cascade" }),
+  cronExpression: varchar("cronExpression", { length: 100 }).notNull(),
+  timezone: varchar("timezone", { length: 50 }).default("Asia/Jerusalem").notNull(),
+  isEnabled: int("isEnabled").default(1).notNull(),
+  lastRunAt: timestamp("lastRunAt"),
+  nextRunAt: timestamp("nextRunAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export const scans = mysqlTable("scans", {
+  id: int("id").autoincrement().primaryKey(),
+  scanConfigId: int("scanConfigId").notNull().references(() => scanConfigs.id),
+  status: mysqlEnum("status", ["pending", "running", "completed", "failed"]).default("pending").notNull(),
+  startedAt: timestamp("startedAt"),
+  completedAt: timestamp("completedAt"),
+  errorMessage: text("errorMessage"),
+  totalHotels: int("totalHotels").default(0),
+  completedHotels: int("completedHotels").default(0),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export const scanResults = mysqlTable("scanResults", {
+  id: int("id").autoincrement().primaryKey(),
+  scanId: int("scanId").notNull().references(() => scans.id, { onDelete: "cascade" }),
+  hotelId: int("hotelId").notNull().references(() => hotels.id),
+  checkInDate: varchar("checkInDate", { length: 10 }).notNull(), // YYYY-MM-DD
+  roomType: mysqlEnum("roomType", ["room_only", "with_breakfast"]).notNull(),
+  price: int("price"), // Price in cents to avoid decimal issues
+  currency: varchar("currency", { length: 3 }).default("ILS"),
+  isAvailable: int("isAvailable").default(1).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Hotel = typeof hotels.$inferSelect;
+export type InsertHotel = typeof hotels.$inferInsert;
+export type ScanConfig = typeof scanConfigs.$inferSelect;
+export type InsertScanConfig = typeof scanConfigs.$inferInsert;
+export type ScanSchedule = typeof scanSchedules.$inferSelect;
+export type InsertScanSchedule = typeof scanSchedules.$inferInsert;
+export type Scan = typeof scans.$inferSelect;
+export type InsertScan = typeof scans.$inferInsert;
+export type ScanResult = typeof scanResults.$inferSelect;
+export type InsertScanResult = typeof scanResults.$inferInsert;
