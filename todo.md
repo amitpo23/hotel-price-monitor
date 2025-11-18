@@ -121,3 +121,14 @@
 - [x] Integrate email sending with scan completion
 - [x] Add email configuration settings (recipient, schedule)
 - [x] Test complete flow: scan → progress → email delivery
+
+
+## Current Sprint: Price Trend Visualizations
+- [x] Install Recharts library for data visualization
+- [x] Create line chart component for price trends over time
+- [x] Add separate charts for room types (room only vs with breakfast)
+- [x] Implement hotel comparison in charts (target vs competitors)
+- [x] Add interactive tooltips showing exact prices on hover
+- [x] Create legend with color coding for each hotel
+- [x] Update Results page to display charts alongside data table
+- [x] Test charts with real scan data

@@ -1,5 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import DashboardLayout from "@/components/DashboardLayout";
+import { PriceTrendChart } from "@/components/PriceTrendChart";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -39,6 +40,18 @@ export default function Results() {
     { configId: parseInt(selectedConfigId) },
     { enabled: !!selectedConfigId }
   );
+
+  // Transform results for chart
+  const chartData = results?.map((item) => ({
+    hotelId: item.hotel.id,
+    hotelName: item.hotel.name,
+    checkInDate: item.result.checkInDate,
+    roomType: item.result.roomType as "room_only" | "with_breakfast",
+    price: item.result.price,
+    isAvailable: item.result.isAvailable === 1,
+  })) || [];
+
+  const targetHotelId = configs?.find((c) => c.id === parseInt(selectedConfigId))?.targetHotelId || 0;
 
   const exportMutation = trpc.export.exportToExcel.useMutation({
     onSuccess: (data) => {
@@ -155,6 +168,11 @@ export default function Results() {
 
         {selectedConfigId && (
           <>
+            {/* Price Trend Chart */}
+            {chartData.length > 0 && (
+              <PriceTrendChart data={chartData} targetHotelId={targetHotelId} />
+            )}
+
             {/* Statistics Cards */}
             {stats && (
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
