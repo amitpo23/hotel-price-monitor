@@ -15,7 +15,39 @@ interface ExportData {
   results: HotelPriceData[];
 }
 
-export async function generateExcelReport(data: ExportData): Promise<Buffer> {
+import * as db from "../db";
+
+export async function generateExcelReport(params: { scanId: number; scanConfigId: number }): Promise<Buffer> {
+  // Fetch scan data
+  const config = await db.getScanConfigById(params.scanConfigId);
+  if (!config) {
+    throw new Error("Scan configuration not found");
+  }
+
+  const hotels = await db.getHotelsForScanConfig(params.scanConfigId);
+  const targetHotel = hotels.find((h) => h.id === config.targetHotelId);
+  const results = await db.getScanResults(params.scanId);
+
+  // Transform results to HotelPriceData format
+  const hotelPriceData: HotelPriceData[] = results.map((r) => {
+    const hotel = hotels.find((h) => h.id === r.hotelId);
+    return {
+      hotelName: hotel?.name || "Unknown Hotel",
+      checkInDate: r.checkInDate,
+      roomType: r.roomType === "room_only" ? "Room Only" : "With Breakfast",
+      price: r.price,
+      isAvailable: r.isAvailable === 1,
+    };
+  });
+
+  const data: ExportData = {
+    configName: config.name,
+    targetHotelName: targetHotel?.name || "Unknown",
+    scanDate: new Date(),
+    results: hotelPriceData,
+  };
+
+  // Continue with workbook generation
   const workbook = new ExcelJS.Workbook();
   
   workbook.creator = "Hotel Price Monitor";

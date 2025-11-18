@@ -1,5 +1,6 @@
 import * as db from "../db";
-import { scrapeHotelPrices } from "../utils/bookingScraper";
+import { scrapeHotelPricesMultiDate } from "../utils/bookingScraperV2";
+import { sendScanReportAuto } from "./emailService";
 
 interface ScanProgress {
   scanId: number;
@@ -58,12 +59,11 @@ export async function executeScan(configId: number): Promise<ScanProgress> {
         console.log(`[ScanService] Scanning hotel: ${hotel.name}`);
 
         try {
-          // Scrape prices for this hotel
-          const results = await scrapeHotelPrices(
+          // Scrape prices for this hotel (V2 with automatic breakfast detection)
+          const results = await scrapeHotelPricesMultiDate(
             hotel.bookingUrl,
             startDate,
-            config.daysForward,
-            roomTypes
+            config.daysForward
           );
 
           // Save results to database
@@ -98,6 +98,20 @@ export async function executeScan(configId: number): Promise<ScanProgress> {
       });
 
       console.log(`[ScanService] Scan ${scanId} completed successfully`);
+
+      // Send email report
+      try {
+        console.log(`[ScanService] Sending email report for scan ${scanId}`);
+        const emailSent = await sendScanReportAuto(scanId);
+        if (emailSent) {
+          console.log(`[ScanService] Email report sent successfully`);
+        } else {
+          console.log(`[ScanService] Email report failed (check GMAIL_USER and GMAIL_APP_PASSWORD env vars)`);
+        }
+      } catch (emailError: any) {
+        console.error(`[ScanService] Email error:`, emailError.message);
+        // Don't fail the scan if email fails
+      }
     } catch (error: any) {
       console.error(`[ScanService] Scan ${scanId} failed:`, error);
       

@@ -28,8 +28,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { trpc } from "@/lib/trpc";
-import { Calendar, Clock, Edit, Play, Plus, Power, PowerOff, ScanLine, Trash2 } from "lucide-react";
+import { Calendar, Clock, Edit, Play, Plus, Power, PowerOff, ScanLine, Trash2, X } from "lucide-react";
 import { useState } from "react";
+import { ScanProgress } from "@/components/ScanProgress";
 import { toast } from "sonner";
 
 type RoomType = "room_only" | "with_breakfast";
@@ -43,6 +44,8 @@ export default function ScanConfigs() {
   const [daysForward, setDaysForward] = useState(60);
   const [scheduleTime, setScheduleTime] = useState("08:00");
   const [scheduleEnabled, setScheduleEnabled] = useState(true);
+  const [activeScanId, setActiveScanId] = useState<number | null>(null);
+  const [showProgressDialog, setShowProgressDialog] = useState(false);
 
   const { data: configs, isLoading: configsLoading, refetch: refetchConfigs } = trpc.scans.configs.list.useQuery(undefined, {
     enabled: !!user,
@@ -87,7 +90,8 @@ export default function ScanConfigs() {
   const runScanMutation = trpc.scans.execute.start.useMutation({
     onSuccess: (data) => {
       toast.success(`Scan started! Scan ID: ${data.scanId}`);
-      toast.info("Scan is running in the background. Check Results page for updates.");
+      setActiveScanId(data.scanId);
+      setShowProgressDialog(true);
     },
     onError: (error) => {
       toast.error(error.message);
@@ -506,6 +510,32 @@ export default function ScanConfigs() {
               </Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Progress Dialog */}
+      <Dialog open={showProgressDialog} onOpenChange={setShowProgressDialog}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center justify-between">
+              Scan Progress
+              <button
+                onClick={() => setShowProgressDialog(false)}
+                className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </DialogTitle>
+          </DialogHeader>
+          {activeScanId && (
+            <ScanProgress
+              scanId={activeScanId}
+              onComplete={() => {
+                toast.success("Scan completed! Refreshing results...");
+                setTimeout(() => setShowProgressDialog(false), 2000);
+              }}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </DashboardLayout>

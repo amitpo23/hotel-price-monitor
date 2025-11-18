@@ -58,7 +58,14 @@ export const exportRouter = router({
       };
 
       // Generate Excel file
-      const buffer = await generateExcelReport(exportData);
+      if (!input.scanId) {
+        throw new Error("Scan ID is required for export");
+      }
+      
+      const buffer = await generateExcelReport({
+        scanId: input.scanId,
+        scanConfigId: input.configId,
+      });
 
       // Convert buffer to base64 for transmission
       const base64 = buffer.toString("base64");
