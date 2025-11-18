@@ -81,3 +81,12 @@
 - [x] Display list of existing scan configurations
 - [x] Add edit/delete functionality for scan configs
 - [x] Test scan configuration creation and editing
+
+
+## Current Sprint: Excel Export Functionality
+- [x] Install ExcelJS library for Excel generation
+- [x] Create backend API endpoint for Excel export
+- [x] Build Excel file with multiple sheets (summary, per-hotel data)
+- [x] Add formatting and styling to Excel output
+- [x] Create download button in Results page
+- [x] Test Excel export with sample data
