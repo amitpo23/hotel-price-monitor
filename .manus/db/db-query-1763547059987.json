@@ -1,0 +1,18 @@
+{
+  "query": "SELECT id, status, totalHotels, completedHotels, errorMessage, createdAt \nFROM scans \nWHERE id = 30002;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3gaYF7se9kVaEXG.b9054b9f64d3 --database N26k37rfuZW3JrMwUJG4CN --execute SELECT id, status, totalHotels, completedHotels, errorMessage, createdAt \nFROM scans \nWHERE id = 30002;",
+  "rows": [
+    {
+      "id": "30002",
+      "status": "running",
+      "totalHotels": "2",
+      "completedHotels": "0",
+      "errorMessage": "NULL",
+      "createdAt": "2025-11-19 10:08:20"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tstatus\ttotalHotels\tcompletedHotels\terrorMessage\tcreatedAt\n30002\trunning\t2\t0\tNULL\t2025-11-19 10:08:20\n",
+  "stderr": "",
+  "execution_time_ms": 1943
+}

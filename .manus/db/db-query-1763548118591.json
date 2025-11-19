@@ -1,0 +1,9 @@
+{
+  "query": "SELECT DISTINCT sr.hotelId, h.name, h.bookingUrl, COUNT(*) as result_count\nFROM scanResults sr\nJOIN hotels h ON sr.hotelId = h.id\nWHERE sr.scanId = 30003\nGROUP BY sr.hotelId, h.name, h.bookingUrl",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3gaYF7se9kVaEXG.b9054b9f64d3 --database N26k37rfuZW3JrMwUJG4CN --execute SELECT DISTINCT sr.hotelId, h.name, h.bookingUrl, COUNT(*) as result_count\nFROM scanResults sr\nJOIN hotels h ON sr.hotelId = h.id\nWHERE sr.scanId = 30003\nGROUP BY sr.hotelId, h.name, h.bookingUrl",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1572
+}

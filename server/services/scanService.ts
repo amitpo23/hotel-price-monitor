@@ -1,6 +1,10 @@
 import * as db from "../db";
-import { scrapeHotelPricesMultiDate } from "../utils/bookingScraperV2";
+import { exec } from 'child_process';
+import { promisify } from 'util';
+import path from 'path';
 import { sendScanReportAuto } from "./emailService";
+
+const execAsync = promisify(exec);
 
 interface ScanProgress {
   scanId: number;
@@ -59,22 +63,36 @@ export async function executeScan(configId: number): Promise<ScanProgress> {
         console.log(`[ScanService] Scanning hotel: ${hotel.name}`);
 
         try {
-          // Scrape prices for this hotel (V2 with automatic breakfast detection)
-          const results = await scrapeHotelPricesMultiDate(
-            hotel.bookingUrl,
-            startDate,
-            config.daysForward
-          );
+          // Scrape prices using Python scraper
+          const pythonScript = path.join(__dirname, '../scripts/booking_scraper.py');
+          const startDateStr = startDate.toISOString().split('T')[0];
+          const roomTypesJson = JSON.stringify(roomTypes);
+          
+          const command = `python3 "${pythonScript}" "${hotel.bookingUrl}" "${startDateStr}" ${config.daysForward} '${roomTypesJson}'`;
+          
+          console.log(`[ScanService] Running Python scraper for ${hotel.name}`);
+          const { stdout, stderr } = await execAsync(command, { maxBuffer: 10 * 1024 * 1024 });
+          
+          if (stderr) {
+            console.log(`[ScanService] Python scraper stderr:`, stderr);
+          }
+          
+          const results = JSON.parse(stdout.trim()) as Array<{
+            date: string;
+            roomType: 'room_only' | 'with_breakfast';
+            price: number;
+            available: boolean;
+          }>;
 
           // Save results to database
           for (const result of results) {
             await db.createScanResult({
               scanId,
               hotelId: hotel.id,
-              checkInDate: result.checkInDate,
+              checkInDate: result.date,
               roomType: result.roomType,
               price: result.price,
-              isAvailable: result.isAvailable ? 1 : 0,
+              isAvailable: result.available ? 1 : 0,
             });
           }
 

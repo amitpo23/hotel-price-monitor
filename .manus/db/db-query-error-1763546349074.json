@@ -1,0 +1,8 @@
+{
+  "query": "DELETE FROM hotels WHERE name = 'Test Hotel';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3gaYF7se9kVaEXG.b9054b9f64d3 --database N26k37rfuZW3JrMwUJG4CN --execute DELETE FROM hotels WHERE name = 'Test Hotel';",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1451 (23000) at line 1: Cannot delete or update a parent row: a foreign key constraint fails (`n26k37rfuzw3jrmwujg4cn`.`scanresults`, CONSTRAINT `scanResults_hotelId_hotels_id_fk` FOREIGN KEY (`hotelId`) REFERENCES `hotels` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION)"
+  ]
+}

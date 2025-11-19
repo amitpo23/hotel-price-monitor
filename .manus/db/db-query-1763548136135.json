@@ -1,0 +1,17 @@
+{
+  "query": "SELECT s.id, s.scanConfigId, s.status, s.completedAt, COUNT(sr.id) as result_count\nFROM scans s\nLEFT JOIN scanResults sr ON s.id = sr.scanId\nWHERE s.id = 30002\nGROUP BY s.id, s.scanConfigId, s.status, s.completedAt",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3gaYF7se9kVaEXG.b9054b9f64d3 --database N26k37rfuZW3JrMwUJG4CN --execute SELECT s.id, s.scanConfigId, s.status, s.completedAt, COUNT(sr.id) as result_count\nFROM scans s\nLEFT JOIN scanResults sr ON s.id = sr.scanId\nWHERE s.id = 30002\nGROUP BY s.id, s.scanConfigId, s.status, s.completedAt",
+  "rows": [
+    {
+      "id": "30002",
+      "scanConfigId": "30001",
+      "status": "running",
+      "completedAt": "NULL",
+      "result_count": "142"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tscanConfigId\tstatus\tcompletedAt\tresult_count\n30002\t30001\trunning\tNULL\t142\n",
+  "stderr": "",
+  "execution_time_ms": 1536
+}

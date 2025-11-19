@@ -1,0 +1,230 @@
+{
+  "query": "SELECT * FROM scanResults WHERE scanId >= 30000 ORDER BY scanId DESC, checkInDate LIMIT 20",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3gaYF7se9kVaEXG.b9054b9f64d3 --database N26k37rfuZW3JrMwUJG4CN --execute SELECT * FROM scanResults WHERE scanId >= 30000 ORDER BY scanId DESC, checkInDate LIMIT 20",
+  "rows": [
+    {
+      "id": "30122",
+      "scanId": "30002",
+      "hotelId": "3",
+      "checkInDate": "2025-11-19",
+      "roomType": "with_breakfast",
+      "price": "0",
+      "currency": "ILS",
+      "isAvailable": "0",
+      "createdAt": "2025-11-19 10:23:36"
+    },
+    {
+      "id": "30002",
+      "scanId": "30002",
+      "hotelId": "2",
+      "checkInDate": "2025-11-19",
+      "roomType": "with_breakfast",
+      "price": "0",
+      "currency": "ILS",
+      "isAvailable": "0",
+      "createdAt": "2025-11-19 10:18:47"
+    },
+    {
+      "id": "30001",
+      "scanId": "30002",
+      "hotelId": "2",
+      "checkInDate": "2025-11-19",
+      "roomType": "room_only",
+      "price": "0",
+      "currency": "ILS",
+      "isAvailable": "0",
+      "createdAt": "2025-11-19 10:18:46"
+    },
+    {
+      "id": "30121",
+      "scanId": "30002",
+      "hotelId": "3",
+      "checkInDate": "2025-11-19",
+      "roomType": "room_only",
+      "price": "0",
+      "currency": "ILS",
+      "isAvailable": "0",
+      "createdAt": "2025-11-19 10:23:36"
+    },
+    {
+      "id": "30123",
+      "scanId": "30002",
+      "hotelId": "3",
+      "checkInDate": "2025-11-20",
+      "roomType": "room_only",
+      "price": "0",
+      "currency": "ILS",
+      "isAvailable": "0",
+      "createdAt": "2025-11-19 10:23:36"
+    },
+    {
+      "id": "30004",
+      "scanId": "30002",
+      "hotelId": "2",
+      "checkInDate": "2025-11-20",
+      "roomType": "with_breakfast",
+      "price": "0",
+      "currency": "ILS",
+      "isAvailable": "0",
+      "createdAt": "2025-11-19 10:18:47"
+    },
+    {
+      "id": "30124",
+      "scanId": "30002",
+      "hotelId": "3",
+      "checkInDate": "2025-11-20",
+      "roomType": "with_breakfast",
+      "price": "0",
+      "currency": "ILS",
+      "isAvailable": "0",
+      "createdAt": "2025-11-19 10:23:37"
+    },
+    {
+      "id": "30003",
+      "scanId": "30002",
+      "hotelId": "2",
+      "checkInDate": "2025-11-20",
+      "roomType": "room_only",
+      "price": "0",
+      "currency": "ILS",
+      "isAvailable": "0",
+      "createdAt": "2025-11-19 10:18:47"
+    },
+    {
+      "id": "30126",
+      "scanId": "30002",
+      "hotelId": "3",
+      "checkInDate": "2025-11-21",
+      "roomType": "with_breakfast",
+      "price": "0",
+      "currency": "ILS",
+      "isAvailable": "0",
+      "createdAt": "2025-11-19 10:23:37"
+    },
+    {
+      "id": "30005",
+      "scanId": "30002",
+      "hotelId": "2",
+      "checkInDate": "2025-11-21",
+      "roomType": "room_only",
+      "price": "0",
+      "currency": "ILS",
+      "isAvailable": "0",
+      "createdAt": "2025-11-19 10:18:47"
+    },
+    {
+      "id": "30006",
+      "scanId": "30002",
+      "hotelId": "2",
+      "checkInDate": "2025-11-21",
+      "roomType": "with_breakfast",
+      "price": "0",
+      "currency": "ILS",
+      "isAvailable": "0",
+      "createdAt": "2025-11-19 10:18:48"
+    },
+    {
+      "id": "30125",
+      "scanId": "30002",
+      "hotelId": "3",
+      "checkInDate": "2025-11-21",
+      "roomType": "room_only",
+      "price": "0",
+      "currency": "ILS",
+      "isAvailable": "0",
+      "createdAt": "2025-11-19 10:23:37"
+    },
+    {
+      "id": "30127",
+      "scanId": "30002",
+      "hotelId": "3",
+      "checkInDate": "2025-11-22",
+      "roomType": "room_only",
+      "price": "0",
+      "currency": "ILS",
+      "isAvailable": "0",
+      "createdAt": "2025-11-19 10:23:37"
+    },
+    {
+      "id": "30007",
+      "scanId": "30002",
+      "hotelId": "2",
+      "checkInDate": "2025-11-22",
+      "roomType": "room_only",
+      "price": "0",
+      "currency": "ILS",
+      "isAvailable": "0",
+      "createdAt": "2025-11-19 10:18:48"
+    },
+    {
+      "id": "30128",
+      "scanId": "30002",
+      "hotelId": "3",
+      "checkInDate": "2025-11-22",
+      "roomType": "with_breakfast",
+      "price": "0",
+      "currency": "ILS",
+      "isAvailable": "0",
+      "createdAt": "2025-11-19 10:23:37"
+    },
+    {
+      "id": "30008",
+      "scanId": "30002",
+      "hotelId": "2",
+      "checkInDate": "2025-11-22",
+      "roomType": "with_breakfast",
+      "price": "0",
+      "currency": "ILS",
+      "isAvailable": "0",
+      "createdAt": "2025-11-19 10:18:48"
+    },
+    {
+      "id": "30009",
+      "scanId": "30002",
+      "hotelId": "2",
+      "checkInDate": "2025-11-23",
+      "roomType": "room_only",
+      "price": "0",
+      "currency": "ILS",
+      "isAvailable": "0",
+      "createdAt": "2025-11-19 10:18:48"
+    },
+    {
+      "id": "30130",
+      "scanId": "30002",
+      "hotelId": "3",
+      "checkInDate": "2025-11-23",
+      "roomType": "with_breakfast",
+      "price": "0",
+      "currency": "ILS",
+      "isAvailable": "0",
+      "createdAt": "2025-11-19 10:23:38"
+    },
+    {
+      "id": "30129",
+      "scanId": "30002",
+      "hotelId": "3",
+      "checkInDate": "2025-11-23",
+      "roomType": "room_only",
+      "price": "0",
+      "currency": "ILS",
+      "isAvailable": "0",
+      "createdAt": "2025-11-19 10:23:38"
+    },
+    {
+      "id": "30010",
+      "scanId": "30002",
+      "hotelId": "2",
+      "checkInDate": "2025-11-23",
+      "roomType": "with_breakfast",
+      "price": "0",
+      "currency": "ILS",
+      "isAvailable": "0",
+      "createdAt": "2025-11-19 10:18:48"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tscanId\thotelId\tcheckInDate\troomType\tprice\tcurrency\tisAvailable\tcreatedAt\n30122\t30002\t3\t2025-11-19\twith_breakfast\t0\tILS\t0\t2025-11-19 10:23:36\n30002\t30002\t2\t2025-11-19\twith_breakfast\t0\tILS\t0\t2025-11-19 10:18:47\n30001\t30002\t2\t2025-11-19\troom_only\t0\tILS\t0\t2025-11-19 10:18:46\n30121\t30002\t3\t2025-11-19\troom_only\t0\tILS\t0\t2025-11-19 10:23:36\n30123\t30002\t3\t2025-11-20\troom_only\t0\tILS\t0\t2025-11-19 10:23:36\n30004\t30002\t2\t2025-11-20\twith_breakfast\t0\tILS\t0\t2025-11-19 10:18:47\n30124\t30002\t3\t2025-11-20\twith_breakfast\t0\tILS\t0\t2025-11-19 10:23:37\n30003\t30002\t2\t2025-11-20\troom_only\t0\tILS\t0\t2025-11-19 10:18:47\n30126\t30002\t3\t2025-11-21\twith_breakfast\t0\tILS\t0\t2025-11-19 10:23:37\n30005\t30002\t2\t2025-11-21\troom_only\t0\tILS\t0\t2025-11-19 10:18:47\n30006\t30002\t2\t2025-11-21\twith_breakfast\t0\tILS\t0\t2025-11-19 10:18:48\n30125\t30002\t3\t2025-11-21\troom_only\t0\tILS\t0\t2025-11-19 10:23:37\n30127\t30002\t3\t2025-11-22\troom_only\t0\tILS\t0\t2025-11-19 10:23:37\n30007\t30002\t2\t2025-11-22\troom_only\t0\tILS\t0\t2025-11-19 10:18:48\n30128\t30002\t3\t2025-11-22\twith_breakfast\t0\tILS\t0\t2025-11-19 10:23:37\n30008\t30002\t2\t2025-11-22\twith_breakfast\t0\tILS\t0\t2025-11-19 10:18:48\n30009\t30002\t2\t2025-11-23\troom_only\t0\tILS\t0\t2025-11-19 10:18:48\n30130\t30002\t3\t2025-11-23\twith_breakfast\t0\tILS\t0\t2025-11-19 10:23:38\n30129\t30002\t3\t2025-11-23\troom_only\t0\tILS\t0\t2025-11-19 10:23:38\n30010\t30002\t2\t2025-11-23\twith_breakfast\t0\tILS\t0\t2025-11-19 10:18:48\n",
+  "stderr": "",
+  "execution_time_ms": 1527
+}

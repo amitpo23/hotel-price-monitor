@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE hotels \nSET name = 'The Jaffa Hotel', bookingUrl = 'https://www.booking.com/hotel/il/the-jaffa.html'\nWHERE name = 'Test Hotel';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3gaYF7se9kVaEXG.b9054b9f64d3 --database N26k37rfuZW3JrMwUJG4CN --execute UPDATE hotels \nSET name = 'The Jaffa Hotel', bookingUrl = 'https://www.booking.com/hotel/il/the-jaffa.html'\nWHERE name = 'Test Hotel';",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1670
+}

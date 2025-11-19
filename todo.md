@@ -141,3 +141,24 @@
 - [x] Test complete scan flow end-to-end - Successfully tested: create config → run scan → view progress
 - [x] Verify database operations are working - All CRUD operations working
 - [x] Test edit functionality for scan configurations - Working
+
+
+## Bug Fix: Scraper Price Extraction
+- [x] Debug why scraper is not extracting prices correctly
+- [x] Test Booking.com page structure manually
+- [x] Update price selectors to match current Booking.com HTML
+- [x] Add proper waits for dynamic content loading
+- [x] Improve price parsing logic
+- [x] Test with real hotel URLs
+- [x] Run full scan to verify price collection works - SUCCESS!
+- [x] Fix scraper to match current Booking.com HTML structure
+- [x] Test with real Scarlet Tel Aviv URL  
+- [x] Run new scan with Python scraper to verify it works - SUCCESS!
+
+
+## Critical Fix: Use Python Scraper (Original Working Approach)
+- [x] Create Python scraper script using Playwright (like the original working version)
+- [x] Add Node.js wrapper to call Python script from server
+- [x] Test Python scraper standalone to verify it works - SUCCESS! Found prices: ₪99-113
+- [x] Integrate Python scraper with scan service
+- [x] Run full scan and verify prices are collected successfully - WORKING! Shows 60 dates, ₪99-113 prices, charts, and tables

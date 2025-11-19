@@ -1,0 +1,25 @@
+{
+  "query": "SELECT id, name, bookingUrl FROM hotels;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3gaYF7se9kVaEXG.b9054b9f64d3 --database N26k37rfuZW3JrMwUJG4CN --execute SELECT id, name, bookingUrl FROM hotels;",
+  "rows": [
+    {
+      "id": "1",
+      "name": "scarlet hotel",
+      "bookingUrl": "https://www.booking.com/searchresults.he.html?aid=356980&label=gog235jc-10CAsoakIYZGF2ZS10bHYtYnktYnJvd24taG90ZWxzSDNYA2hqiAEBmAEzuAEXyAEM2AED6AEB-AEBiAIBqAIBuAL6q_DIBsACAdICJGRhMTZlY2YxLWEyZjQtNDNhMC1hOTk4LWZmNTg5MGY5YzU1NdgCAeACAQ&highlighted_hotels=2604183&checkin=2026-05-11&redirected=1&city=-781545&hlrd=user_sh&source=hotel&checkout=2026-05-12&keep_landing=1&sid=bcc23203a5d3b87b897986d09829cbd3"
+    },
+    {
+      "id": "2",
+      "name": "dvora hotel",
+      "bookingUrl": "https://www.booking.com/hotel/il/debrah-brown-tel-aviv.he.html?aid=356980&label=gog235jc-10CAsoakIVZGVicmFoLWJyb3duLXRlbC1hdml2SA5YA2hqiAEBmAEzuAEXyAEM2AED6AEB-AEBiAIBqAIBuALTrPDIBsACAdICJGZlNzdhZGJmLTU5NTctNDc4NS04YjEzLTIxZjQwYTIxZjA0Y9gCAeACAQ&sid=bcc23203a5d3b87b897986d09829cbd3&age=0&all_sr_blocks=715254903_421827212_2_2_0&checkin=2026-05-11&checkout=2026-05-12&dest_id=-781545&dest_type=city&dist=0&group_adults=2&group_children=0&hapos=1&highlighted_blocks=715254903_421827212_2_2_0&hpos=1&matching_block_id=715254903_421827212_2_2_0&no_rooms=1&req_adults=2&req_children=0&room1=A%2CA&sb_price_type=total&sr_order=popularity&sr_pri_blocks=715254903_421827212_2_2_0__89000&srepoch=1763448408&srpvid=ed212faa9e8102e5&type=total&ucfs=1&"
+    },
+    {
+      "id": "3",
+      "name": "Test Hotel",
+      "bookingUrl": "https://booking.com/test"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tbookingUrl\n1\tscarlet hotel\thttps://www.booking.com/searchresults.he.html?aid=356980&label=gog235jc-10CAsoakIYZGF2ZS10bHYtYnktYnJvd24taG90ZWxzSDNYA2hqiAEBmAEzuAEXyAEM2AED6AEB-AEBiAIBqAIBuAL6q_DIBsACAdICJGRhMTZlY2YxLWEyZjQtNDNhMC1hOTk4LWZmNTg5MGY5YzU1NdgCAeACAQ&highlighted_hotels=2604183&checkin=2026-05-11&redirected=1&city=-781545&hlrd=user_sh&source=hotel&checkout=2026-05-12&keep_landing=1&sid=bcc23203a5d3b87b897986d09829cbd3\n2\tdvora hotel\thttps://www.booking.com/hotel/il/debrah-brown-tel-aviv.he.html?aid=356980&label=gog235jc-10CAsoakIVZGVicmFoLWJyb3duLXRlbC1hdml2SA5YA2hqiAEBmAEzuAEXyAEM2AED6AEB-AEBiAIBqAIBuALTrPDIBsACAdICJGZlNzdhZGJmLTU5NTctNDc4NS04YjEzLTIxZjQwYTIxZjA0Y9gCAeACAQ&sid=bcc23203a5d3b87b897986d09829cbd3&age=0&all_sr_blocks=715254903_421827212_2_2_0&checkin=2026-05-11&checkout=2026-05-12&dest_id=-781545&dest_type=city&dist=0&group_adults=2&group_children=0&hapos=1&highlighted_blocks=715254903_421827212_2_2_0&hpos=1&matching_block_id=715254903_421827212_2_2_0&no_rooms=1&req_adults=2&req_children=0&room1=A%2CA&sb_price_type=total&sr_order=popularity&sr_pri_blocks=715254903_421827212_2_2_0__89000&srepoch=1763448408&srpvid=ed212faa9e8102e5&type=total&ucfs=1&\n3\tTest Hotel\thttps://booking.com/test\n",
+  "stderr": "",
+  "execution_time_ms": 1595
+}
