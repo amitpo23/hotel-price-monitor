@@ -1,0 +1,25 @@
+{
+  "query": "SELECT id, name, bookingUrl FROM hotels LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3gaYF7se9kVaEXG.b9054b9f64d3 --database N26k37rfuZW3JrMwUJG4CN --execute SELECT id, name, bookingUrl FROM hotels LIMIT 5;",
+  "rows": [
+    {
+      "id": "1",
+      "name": "Scarlet Hotel (Dave Gordon)",
+      "bookingUrl": "https://www.booking.com/hotel/il/dave-tlv-by-brown-hotels.html"
+    },
+    {
+      "id": "2",
+      "name": "dvora hotel",
+      "bookingUrl": "https://www.booking.com/hotel/il/debrah-brown-tel-aviv.he.html?aid=356980&label=gog235jc-10CAsoakIVZGVicmFoLWJyb3duLXRlbC1hdml2SA5YA2hqiAEBmAEzuAEXyAEM2AED6AEB-AEBiAIBqAIBuALTrPDIBsACAdICJGZlNzdhZGJmLTU5NTctNDc4NS04YjEzLTIxZjQwYTIxZjA0Y9gCAeACAQ&sid=bcc23203a5d3b87b897986d09829cbd3&age=0&all_sr_blocks=715254903_421827212_2_2_0&checkin=2026-05-11&checkout=2026-05-12&dest_id=-781545&dest_type=city&dist=0&group_adults=2&group_children=0&hapos=1&highlighted_blocks=715254903_421827212_2_2_0&hpos=1&matching_block_id=715254903_421827212_2_2_0&no_rooms=1&req_adults=2&req_children=0&room1=A%2CA&sb_price_type=total&sr_order=popularity&sr_pri_blocks=715254903_421827212_2_2_0__89000&srepoch=1763448408&srpvid=ed212faa9e8102e5&type=total&ucfs=1&"
+    },
+    {
+      "id": "3",
+      "name": "The Jaffa Hotel",
+      "bookingUrl": "https://www.booking.com/hotel/il/the-jaffa.html"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tbookingUrl\n1\tScarlet Hotel (Dave Gordon)\thttps://www.booking.com/hotel/il/dave-tlv-by-brown-hotels.html\n2\tdvora hotel\thttps://www.booking.com/hotel/il/debrah-brown-tel-aviv.he.html?aid=356980&label=gog235jc-10CAsoakIVZGVicmFoLWJyb3duLXRlbC1hdml2SA5YA2hqiAEBmAEzuAEXyAEM2AED6AEB-AEBiAIBqAIBuALTrPDIBsACAdICJGZlNzdhZGJmLTU5NTctNDc4NS04YjEzLTIxZjQwYTIxZjA0Y9gCAeACAQ&sid=bcc23203a5d3b87b897986d09829cbd3&age=0&all_sr_blocks=715254903_421827212_2_2_0&checkin=2026-05-11&checkout=2026-05-12&dest_id=-781545&dest_type=city&dist=0&group_adults=2&group_children=0&hapos=1&highlighted_blocks=715254903_421827212_2_2_0&hpos=1&matching_block_id=715254903_421827212_2_2_0&no_rooms=1&req_adults=2&req_children=0&room1=A%2CA&sb_price_type=total&sr_order=popularity&sr_pri_blocks=715254903_421827212_2_2_0__89000&srepoch=1763448408&srpvid=ed212faa9e8102e5&type=total&ucfs=1&\n3\tThe Jaffa Hotel\thttps://www.booking.com/hotel/il/the-jaffa.html\n",
+  "stderr": "",
+  "execution_time_ms": 1574
+}

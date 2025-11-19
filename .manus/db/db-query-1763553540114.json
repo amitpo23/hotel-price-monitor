@@ -1,0 +1,60 @@
+{
+  "query": "SELECT s.id, s.scanConfigId, s.status, s.totalHotels, s.completedHotels, s.createdAt, s.completedAt, \n       (SELECT COUNT(*) FROM scanResults WHERE scanId = s.id) as resultCount\nFROM scans s \nORDER BY s.id DESC \nLIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3gaYF7se9kVaEXG.b9054b9f64d3 --database N26k37rfuZW3JrMwUJG4CN --execute SELECT s.id, s.scanConfigId, s.status, s.totalHotels, s.completedHotels, s.createdAt, s.completedAt, \n       (SELECT COUNT(*) FROM scanResults WHERE scanId = s.id) as resultCount\nFROM scans s \nORDER BY s.id DESC \nLIMIT 5;",
+  "rows": [
+    {
+      "id": "60001",
+      "scanConfigId": "30001",
+      "status": "completed",
+      "totalHotels": "2",
+      "completedHotels": "0",
+      "createdAt": "2025-11-19 11:56:01",
+      "completedAt": "2025-11-19 11:56:01",
+      "resultCount": "0"
+    },
+    {
+      "id": "30003",
+      "scanConfigId": "30001",
+      "status": "completed",
+      "totalHotels": "2",
+      "completedHotels": "0",
+      "createdAt": "2025-11-19 10:25:01",
+      "completedAt": "2025-11-19 10:25:01",
+      "resultCount": "0"
+    },
+    {
+      "id": "30002",
+      "scanConfigId": "30001",
+      "status": "completed",
+      "totalHotels": "2",
+      "completedHotels": "1",
+      "createdAt": "2025-11-19 10:08:20",
+      "completedAt": "2025-11-19 10:29:12",
+      "resultCount": "142"
+    },
+    {
+      "id": "30001",
+      "scanConfigId": "30001",
+      "status": "completed",
+      "totalHotels": "2",
+      "completedHotels": "0",
+      "createdAt": "2025-11-19 09:56:49",
+      "completedAt": "2025-11-19 10:06:22",
+      "resultCount": "0"
+    },
+    {
+      "id": "4",
+      "scanConfigId": "30001",
+      "status": "completed",
+      "totalHotels": "2",
+      "completedHotels": "2",
+      "createdAt": "2025-11-18 07:32:31",
+      "completedAt": "2025-11-18 07:36:34",
+      "resultCount": "120"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tscanConfigId\tstatus\ttotalHotels\tcompletedHotels\tcreatedAt\tcompletedAt\tresultCount\n60001\t30001\tcompleted\t2\t0\t2025-11-19 11:56:01\t2025-11-19 11:56:01\t0\n30003\t30001\tcompleted\t2\t0\t2025-11-19 10:25:01\t2025-11-19 10:25:01\t0\n30002\t30001\tcompleted\t2\t1\t2025-11-19 10:08:20\t2025-11-19 10:29:12\t142\n30001\t30001\tcompleted\t2\t0\t2025-11-19 09:56:49\t2025-11-19 10:06:22\t0\n4\t30001\tcompleted\t2\t2\t2025-11-18 07:32:31\t2025-11-18 07:36:34\t120\n",
+  "stderr": "",
+  "execution_time_ms": 1566
+}
