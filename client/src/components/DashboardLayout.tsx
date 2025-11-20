@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/sidebar";
 import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { Building2, LayoutDashboard, LogOut, PanelLeft, ScanLine, BarChart3 } from "lucide-react";
+import { Building2, LayoutDashboard, LogOut, PanelLeft, ScanLine, BarChart3, Activity } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
@@ -32,6 +32,7 @@ const menuItems = [
   { icon: Building2, label: "Hotels", path: "/hotels" },
   { icon: ScanLine, label: "Scan Configs", path: "/scans" },
   { icon: BarChart3, label: "Results", path: "/results" },
+  { icon: Activity, label: "Monitoring", path: "/monitoring" },
 ];
 
 const SIDEBAR_WIDTH_KEY = "sidebar-width";

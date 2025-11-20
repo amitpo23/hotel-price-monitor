@@ -8,6 +8,7 @@ import Home from "./pages/Home";
 import Hotels from "./pages/Hotels";
 import ScanConfigs from "./pages/ScanConfigs";
 import Results from "./pages/Results";
+import Monitoring from "./pages/Monitoring";
 
 function Router() {
   return (
@@ -16,6 +17,7 @@ function Router() {
       <Route path={"/hotels"} component={Hotels} />
       <Route path={"/scans"} component={ScanConfigs} />
       <Route path={"/results"} component={Results} />
+      <Route path={"/monitoring"} component={Monitoring} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>
