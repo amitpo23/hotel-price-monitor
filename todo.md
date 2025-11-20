@@ -175,3 +175,11 @@
 - [x] Display live logs with filtering and search
 - [x] Add refresh mechanism for real-time updates
 - [x] Integrate with monitoring API endpoints
+
+
+## Critical Bug: Scans Running But No Results
+- [x] Investigate why 18 scans completed but 0 results stored
+- [x] Check scraper logs for errors
+- [x] Verify Python scraper is being called correctly
+- [x] Fix __dirname issue in ES modules
+- [x] Fix Python version mismatch (use python3.11 instead of python3)

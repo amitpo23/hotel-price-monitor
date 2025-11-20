@@ -1,0 +1,55 @@
+{
+  "query": "SELECT id, scanConfigId, status, startedAt, completedAt, totalHotels, completedHotels FROM scans ORDER BY id DESC LIMIT 5",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3gaYF7se9kVaEXG.b9054b9f64d3 --database N26k37rfuZW3JrMwUJG4CN --execute SELECT id, scanConfigId, status, startedAt, completedAt, totalHotels, completedHotels FROM scans ORDER BY id DESC LIMIT 5",
+  "rows": [
+    {
+      "id": "210003",
+      "scanConfigId": "30001",
+      "status": "completed",
+      "startedAt": "NULL",
+      "completedAt": "2025-11-20 09:26:47",
+      "totalHotels": "2",
+      "completedHotels": "0"
+    },
+    {
+      "id": "210002",
+      "scanConfigId": "60001",
+      "status": "completed",
+      "startedAt": "NULL",
+      "completedAt": "2025-11-20 09:26:43",
+      "totalHotels": "1",
+      "completedHotels": "0"
+    },
+    {
+      "id": "210001",
+      "scanConfigId": "30001",
+      "status": "completed",
+      "startedAt": "NULL",
+      "completedAt": "2025-11-20 09:26:16",
+      "totalHotels": "2",
+      "completedHotels": "0"
+    },
+    {
+      "id": "180002",
+      "scanConfigId": "60001",
+      "status": "completed",
+      "startedAt": "NULL",
+      "completedAt": "2025-11-20 08:46:51",
+      "totalHotels": "1",
+      "completedHotels": "0"
+    },
+    {
+      "id": "180001",
+      "scanConfigId": "30001",
+      "status": "completed",
+      "startedAt": "NULL",
+      "completedAt": "2025-11-20 08:46:45",
+      "totalHotels": "2",
+      "completedHotels": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tscanConfigId\tstatus\tstartedAt\tcompletedAt\ttotalHotels\tcompletedHotels\n210003\t30001\tcompleted\tNULL\t2025-11-20 09:26:47\t2\t0\n210002\t60001\tcompleted\tNULL\t2025-11-20 09:26:43\t1\t0\n210001\t30001\tcompleted\tNULL\t2025-11-20 09:26:16\t2\t0\n180002\t60001\tcompleted\tNULL\t2025-11-20 08:46:51\t1\t0\n180001\t30001\tcompleted\tNULL\t2025-11-20 08:46:45\t2\t0\n",
+  "stderr": "",
+  "execution_time_ms": 1527
+}

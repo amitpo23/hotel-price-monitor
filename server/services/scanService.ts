@@ -2,6 +2,11 @@ import * as db from "../db";
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 import { sendScanReportAuto } from "./emailService";
 
 const execAsync = promisify(exec);
@@ -90,10 +95,11 @@ export async function executeScan(configId: number): Promise<ScanProgress> {
         try {
           // Scrape prices using Python scraper
           const pythonScript = path.join(__dirname, '../scripts/booking_scraper.py');
+          console.log(`[ScanService] Python script path: ${pythonScript}`);
           const startDateStr = startDate.toISOString().split('T')[0];
           const roomTypesJson = JSON.stringify(roomTypes);
 
-          const command = `python3 "${pythonScript}" "${hotel.bookingUrl}" "${startDateStr}" ${config.daysForward} '${roomTypesJson}'`;
+          const command = `python3.11 "${pythonScript}" "${hotel.bookingUrl}" "${startDateStr}" ${config.daysForward} '${roomTypesJson}'`;
 
           console.log(`[ScanService] 🐍 Executing Python scraper...`);
           console.log(`[ScanService] Command: ${command}`);
