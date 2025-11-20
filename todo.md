@@ -215,8 +215,8 @@
 - [x] Reverted to Python scraper for Railway deployment
 
 ## Railway Deployment
-- [ ] Save checkpoint with Python scraper
-- [ ] Push to GitHub
+- [x] Save checkpoint with Python scraper
+- [x] Push to GitHub
 - [ ] Deploy to Railway
 - [ ] Configure environment variables
 - [ ] Test scraper in production
