@@ -201,3 +201,22 @@
 - [x] Results exist in database (scan 300006 has 7 results) but not shown in UI
 - [x] Investigate Results page query logic - Found: selectedConfigId starts empty
 - [x] Fix the display issue - Auto-select first config on load
+
+
+## Critical: Python Not Available in Production
+- [ ] Add nixpacks.toml to install Python 3.11 in production
+- [ ] Install Playwright and dependencies in production
+- [ ] Ensure scraper works in Docker container environment
+
+
+## Workaround: Replace Python with Node.js Scraper
+- [x] Create Node.js scraper using Playwright (avoid Python dependency)
+- [x] Update scanService to call Node.js scraper instead of Python
+- [x] Reverted to Python scraper for Railway deployment
+
+## Railway Deployment
+- [ ] Save checkpoint with Python scraper
+- [ ] Push to GitHub
+- [ ] Deploy to Railway
+- [ ] Configure environment variables
+- [ ] Test scraper in production
