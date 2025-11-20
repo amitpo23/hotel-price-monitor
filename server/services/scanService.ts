@@ -2,6 +2,7 @@ import * as db from "../db";
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import path from 'path';
+import fs from 'fs';
 import { sendScanReportAuto } from "./emailService";
 
 const execAsync = promisify(exec);
@@ -39,6 +40,7 @@ export async function executeScan(configId: number): Promise<ScanProgress> {
   const scanResult = await db.createScan({
     scanConfigId: configId,
     status: "running",
+    startedAt: new Date(),
     totalHotels: hotels.length,
     completedHotels: 0,
   });
@@ -67,24 +69,54 @@ export async function executeScan(configId: number): Promise<ScanProgress> {
           const pythonScript = path.join(__dirname, '../scripts/booking_scraper.py');
           const startDateStr = startDate.toISOString().split('T')[0];
           const roomTypesJson = JSON.stringify(roomTypes);
-          
+
+          // Verify Python script exists
+          if (!fs.existsSync(pythonScript)) {
+            throw new Error(`Python scraper script not found at: ${pythonScript}`);
+          }
+
           const command = `python3 "${pythonScript}" "${hotel.bookingUrl}" "${startDateStr}" ${config.daysForward} '${roomTypesJson}'`;
-          
+
           console.log(`[ScanService] Running Python scraper for ${hotel.name}`);
-          const { stdout, stderr } = await execAsync(command, { maxBuffer: 10 * 1024 * 1024 });
-          
+
+          let stdout: string;
+          let stderr: string;
+          try {
+            const result = await execAsync(command, { maxBuffer: 10 * 1024 * 1024 });
+            stdout = result.stdout;
+            stderr = result.stderr;
+          } catch (execError: any) {
+            if (execError.code === 'ENOENT' || execError.message?.includes('python3: command not found')) {
+              throw new Error('Python 3 is not installed or not in PATH. Please install Python 3 to use the scraper.');
+            }
+            throw new Error(`Failed to execute Python scraper: ${execError.message}`);
+          }
+
           if (stderr) {
             console.log(`[ScanService] Python scraper stderr:`, stderr);
           }
-          
-          const results = JSON.parse(stdout.trim()) as Array<{
+
+          if (!stdout || stdout.trim() === '') {
+            throw new Error('Python scraper returned empty output');
+          }
+
+          let results: Array<{
             date: string;
             roomType: 'room_only' | 'with_breakfast';
             price: number;
             available: boolean;
           }>;
 
+          try {
+            results = JSON.parse(stdout.trim());
+          } catch (parseError: any) {
+            throw new Error(`Failed to parse Python scraper output: ${parseError.message}. Output: ${stdout.substring(0, 200)}`);
+          }
+
           // Save results to database
+          // Note: Currency defaults to ILS in the database schema
+          // The Python scraper is configured for Israeli hotels (Booking.com IL)
+          // If expanding to other markets, add currency detection in the scraper
           for (const result of results) {
             await db.createScanResult({
               scanId,
@@ -93,6 +125,7 @@ export async function executeScan(configId: number): Promise<ScanProgress> {
               roomType: result.roomType,
               price: result.price,
               isAvailable: result.available ? 1 : 0,
+              // currency field uses database default: "ILS"
             });
           }
 

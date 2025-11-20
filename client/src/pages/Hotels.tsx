@@ -37,6 +37,8 @@ export default function Hotels() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingHotel, setEditingHotel] = useState<any>(null);
+  const [addCategory, setAddCategory] = useState<"target" | "competitor">("competitor");
+  const [editCategory, setEditCategory] = useState<"target" | "competitor">("competitor");
 
   const { data: hotels, isLoading, refetch } = trpc.hotels.list.useQuery(undefined, {
     enabled: !!user,
@@ -179,6 +181,7 @@ export default function Hotels() {
                           size="sm"
                           onClick={() => {
                             setEditingHotel(hotel);
+                            setEditCategory(hotel.category);
                             setIsEditDialogOpen(true);
                           }}
                         >
@@ -244,7 +247,7 @@ export default function Hotels() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="category">Category *</Label>
-                <Select name="category" defaultValue="competitor">
+                <Select value={addCategory} onValueChange={(value) => setAddCategory(value as "target" | "competitor")}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -253,6 +256,7 @@ export default function Hotels() {
                     <SelectItem value="competitor">Competitor</SelectItem>
                   </SelectContent>
                 </Select>
+                <input type="hidden" name="category" value={addCategory} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="notes">Notes</Label>
@@ -310,7 +314,7 @@ export default function Hotels() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="edit-category">Category *</Label>
-                  <Select name="category" defaultValue={editingHotel.category}>
+                  <Select value={editCategory} onValueChange={(value) => setEditCategory(value as "target" | "competitor")}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -319,6 +323,7 @@ export default function Hotels() {
                       <SelectItem value="competitor">Competitor</SelectItem>
                     </SelectContent>
                   </Select>
+                  <input type="hidden" name="category" value={editCategory} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="edit-notes">Notes</Label>

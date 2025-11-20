@@ -25,45 +25,27 @@ export const exportRouter = router({
         throw new Error("Target hotel not found");
       }
 
-      // Get latest scan results if scanId not provided
-      let results;
-      let scanDate = new Date();
+      // Determine which scan to export
+      let actualScanId = input.scanId;
 
-      if (input.scanId) {
-        const scan = await db.getScanById(input.scanId);
-        if (scan) {
-          scanDate = scan.createdAt;
+      if (!actualScanId) {
+        // Find the latest scan for this config
+        const latestScan = await db.getLatestScanForConfig(input.configId);
+        if (!latestScan) {
+          throw new Error("No scans found for this configuration");
         }
-        results = await db.getScanResultsWithHotels(input.scanId);
-      } else {
-        results = await db.getLatestScanResultsForConfig(input.configId);
+        actualScanId = latestScan.id;
       }
 
-      if (results.length === 0) {
-        throw new Error("No scan results available for export");
+      // Verify scan exists
+      const scan = await db.getScanById(actualScanId);
+      if (!scan) {
+        throw new Error("Scan not found");
       }
-
-      // Transform data for Excel export
-      const exportData = {
-        configName: config.name,
-        targetHotelName: targetHotel.name,
-        scanDate,
-        results: results.map((r) => ({
-          hotelName: r.hotel.name,
-          checkInDate: r.result.checkInDate,
-          roomType: r.result.roomType,
-          price: r.result.price,
-          isAvailable: r.result.isAvailable === 1,
-        })),
-      };
 
       // Generate Excel file
-      if (!input.scanId) {
-        throw new Error("Scan ID is required for export");
-      }
-      
       const buffer = await generateExcelReport({
-        scanId: input.scanId,
+        scanId: actualScanId,
         scanConfigId: input.configId,
       });
 

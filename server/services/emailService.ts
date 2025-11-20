@@ -209,8 +209,13 @@ export async function sendScanReport(config: EmailConfig): Promise<boolean> {
  * Send scan report to default recipient (from env or config)
  */
 export async function sendScanReportAuto(scanId: number): Promise<boolean> {
-  const defaultRecipient = process.env.DEFAULT_REPORT_EMAIL || "amitporat1981@gmail.com";
-  
+  const defaultRecipient = process.env.DEFAULT_REPORT_EMAIL;
+
+  if (!defaultRecipient) {
+    console.warn('[EmailService] DEFAULT_REPORT_EMAIL not configured, skipping automatic email report');
+    return false;
+  }
+
   return sendScanReport({
     scanId,
     recipient: defaultRecipient,

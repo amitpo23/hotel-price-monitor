@@ -1,4 +1,4 @@
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { 
   InsertUser, users,
@@ -191,7 +191,10 @@ export async function removeHotelFromScanConfig(scanConfigId: number, hotelId: n
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   return db.delete(scanConfigHotels)
-    .where(eq(scanConfigHotels.scanConfigId, scanConfigId));
+    .where(and(
+      eq(scanConfigHotels.scanConfigId, scanConfigId),
+      eq(scanConfigHotels.hotelId, hotelId)
+    ));
 }
 
 // Scan Schedules
@@ -274,15 +277,29 @@ export async function getScanResultsWithHotels(scanId: number) {
 export async function getLatestScanResultsForConfig(scanConfigId: number) {
   const db = await getDb();
   if (!db) return [];
-  
-  // Get the latest completed scan for this config
+
+  // Get the latest scan for this config (use createdAt since completedAt can be null)
   const latestScan = await db.select()
     .from(scans)
     .where(eq(scans.scanConfigId, scanConfigId))
-    .orderBy(desc(scans.completedAt))
+    .orderBy(desc(scans.createdAt))
     .limit(1);
-  
+
   if (!latestScan[0]) return [];
-  
+
   return getScanResultsWithHotels(latestScan[0].id);
+}
+
+export async function getLatestScanForConfig(scanConfigId: number) {
+  const db = await getDb();
+  if (!db) return null;
+
+  // Get the latest scan for this config (completed or not)
+  const latestScan = await db.select()
+    .from(scans)
+    .where(eq(scans.scanConfigId, scanConfigId))
+    .orderBy(desc(scans.createdAt))
+    .limit(1);
+
+  return latestScan[0] || null;
 }

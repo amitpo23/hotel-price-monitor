@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, index } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -92,6 +92,10 @@ export const scanResults = mysqlTable("scanResults", {
   currency: varchar("currency", { length: 3 }).default("ILS"),
   isAvailable: int("isAvailable").default(1).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (table) => {
+  return {
+    scanIdIdx: index("scanId_idx").on(table.scanId),
+  };
 });
 
 export type Hotel = typeof hotels.$inferSelect;
