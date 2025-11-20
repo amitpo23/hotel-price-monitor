@@ -125,13 +125,15 @@ async def scrape_hotel_prices(hotel_url: str, start_date_str: str, days_forward:
                             price_clean = ''.join(c for c in price_text if c.isdigit() or c == '.')
                             if not price_clean:
                                 continue
-                            
+
                             price = float(price_clean)
-                            
+                            # Convert to cents (multiply by 100) to match database schema
+                            price_in_cents = int(price * 100)
+
                             results.append({
                                 'date': check_in_str,
                                 'roomType': room_type,
-                                'price': price,
+                                'price': price_in_cents,
                                 'available': True
                             })
                             

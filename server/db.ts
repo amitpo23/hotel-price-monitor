@@ -274,15 +274,22 @@ export async function getScanResultsWithHotels(scanId: number) {
 export async function getLatestScanResultsForConfig(scanConfigId: number) {
   const db = await getDb();
   if (!db) return [];
-  
+
   // Get the latest completed scan for this config
+  // Order by id DESC to get the most recent scan reliably
   const latestScan = await db.select()
     .from(scans)
     .where(eq(scans.scanConfigId, scanConfigId))
-    .orderBy(desc(scans.completedAt))
+    .orderBy(desc(scans.id))
     .limit(1);
-  
+
   if (!latestScan[0]) return [];
-  
+
+  // Only return results if scan is completed
+  if (latestScan[0].status !== 'completed') {
+    console.log(`[DB] Latest scan ${latestScan[0].id} is still ${latestScan[0].status}`);
+    return [];
+  }
+
   return getScanResultsWithHotels(latestScan[0].id);
 }
