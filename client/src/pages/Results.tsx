@@ -37,38 +37,36 @@ export default function Results() {
 
   const { data: configs, isLoading: configsLoading } = trpc.scans.configs.list.useQuery(undefined, {
     enabled: !!user,
-    onSuccess: (data) => {
-      console.log("[Results] Configs loaded:", data);
-    },
-    onError: (error) => {
-      console.error("[Results] Error loading configs:", error);
-    },
   });
+
+  // Auto-select first config when configs load
+  useEffect(() => {
+    if (configs && configs.length > 0 && !selectedConfigId) {
+      const firstConfigId = configs[0].id.toString();
+      console.log("[Results] Auto-selecting first config:", firstConfigId);
+      setSelectedConfigId(firstConfigId);
+    }
+  }, [configs, selectedConfigId]);
 
   const { data: results, isLoading: resultsLoading, refetch } = trpc.scans.results.getLatest.useQuery(
     { configId: parseInt(selectedConfigId) },
     {
       enabled: !!selectedConfigId,
-      onSuccess: (data) => {
-        console.log("[Results] Results loaded:", data);
-        console.log("[Results] Number of results:", data?.length || 0);
-      },
-      onError: (error) => {
-        console.error("[Results] Error loading results:", error);
-      },
     }
   );
+
+  // Log results when they change
+  useEffect(() => {
+    if (results) {
+      console.log("[Results] Results loaded:", results);
+      console.log("[Results] Number of results:", results?.length || 0);
+    }
+  }, [results]);
 
   const { data: stats } = trpc.scans.results.getStats.useQuery(
     { configId: parseInt(selectedConfigId) },
     {
       enabled: !!selectedConfigId,
-      onSuccess: (data) => {
-        console.log("[Results] Stats loaded:", data);
-      },
-      onError: (error) => {
-        console.error("[Results] Error loading stats:", error);
-      },
     }
   );
 

@@ -1,0 +1,50 @@
+{
+  "query": "SELECT scanId, hotelId, checkInDate, roomType, price, isAvailable FROM scanResults WHERE scanId = 300006 LIMIT 5",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3gaYF7se9kVaEXG.b9054b9f64d3 --database N26k37rfuZW3JrMwUJG4CN --execute SELECT scanId, hotelId, checkInDate, roomType, price, isAvailable FROM scanResults WHERE scanId = 300006 LIMIT 5",
+  "rows": [
+    {
+      "scanId": "300006",
+      "hotelId": "1",
+      "checkInDate": "2025-11-21",
+      "roomType": "room_only",
+      "price": "21800",
+      "isAvailable": "1"
+    },
+    {
+      "scanId": "300006",
+      "hotelId": "1",
+      "checkInDate": "2025-11-22",
+      "roomType": "room_only",
+      "price": "13100",
+      "isAvailable": "1"
+    },
+    {
+      "scanId": "300006",
+      "hotelId": "1",
+      "checkInDate": "2025-11-23",
+      "roomType": "room_only",
+      "price": "11300",
+      "isAvailable": "1"
+    },
+    {
+      "scanId": "300006",
+      "hotelId": "1",
+      "checkInDate": "2025-11-24",
+      "roomType": "room_only",
+      "price": "12800",
+      "isAvailable": "1"
+    },
+    {
+      "scanId": "300006",
+      "hotelId": "1",
+      "checkInDate": "2025-11-25",
+      "roomType": "room_only",
+      "price": "12600",
+      "isAvailable": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "scanId\thotelId\tcheckInDate\troomType\tprice\tisAvailable\n300006\t1\t2025-11-21\troom_only\t21800\t1\n300006\t1\t2025-11-22\troom_only\t13100\t1\n300006\t1\t2025-11-23\troom_only\t11300\t1\n300006\t1\t2025-11-24\troom_only\t12800\t1\n300006\t1\t2025-11-25\troom_only\t12600\t1\n",
+  "stderr": "",
+  "execution_time_ms": 1589
+}

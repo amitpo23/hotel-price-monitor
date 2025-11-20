@@ -183,3 +183,21 @@
 - [x] Verify Python scraper is being called correctly
 - [x] Fix __dirname issue in ES modules
 - [x] Fix Python version mismatch (use python3.11 instead of python3)
+
+
+## Bug: python3.11 not found in runtime
+- [x] Revert to python3 command (python3.11 only exists in dev sandbox)
+- [x] Ensure Playwright is installed in runtime environment
+- [x] Test scan with python3 and verify it works - SUCCESS! ₪502, ₪458
+
+
+## Workaround: Direct Database Scraper
+- [ ] Create standalone script that scrapes and inserts to DB directly
+- [ ] Run script and verify results appear in Results page
+- [ ] Fix the main scan service to work properly
+
+
+## Bug: Results Page Not Displaying Data
+- [x] Results exist in database (scan 300006 has 7 results) but not shown in UI
+- [x] Investigate Results page query logic - Found: selectedConfigId starts empty
+- [x] Fix the display issue - Auto-select first config on load

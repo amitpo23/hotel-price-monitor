@@ -1,0 +1,17 @@
+{
+  "query": "SELECT id, scanConfigId, status, totalHotels, completedHotels FROM scans WHERE id = 300006",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3gaYF7se9kVaEXG.b9054b9f64d3 --database N26k37rfuZW3JrMwUJG4CN --execute SELECT id, scanConfigId, status, totalHotels, completedHotels FROM scans WHERE id = 300006",
+  "rows": [
+    {
+      "id": "300006",
+      "scanConfigId": "30001",
+      "status": "completed",
+      "totalHotels": "1",
+      "completedHotels": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tscanConfigId\tstatus\ttotalHotels\tcompletedHotels\n300006\t30001\tcompleted\t1\t1\n",
+  "stderr": "",
+  "execution_time_ms": 1525
+}

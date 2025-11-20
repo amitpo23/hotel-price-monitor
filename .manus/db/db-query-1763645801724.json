@@ -1,0 +1,18 @@
+{
+  "query": "SELECT id, status, completedHotels, totalHotels, errorMessage, startedAt FROM scans ORDER BY id DESC LIMIT 1",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3gaYF7se9kVaEXG.b9054b9f64d3 --database N26k37rfuZW3JrMwUJG4CN --execute SELECT id, status, completedHotels, totalHotels, errorMessage, startedAt FROM scans ORDER BY id DESC LIMIT 1",
+  "rows": [
+    {
+      "id": "300002",
+      "status": "completed",
+      "completedHotels": "0",
+      "totalHotels": "1",
+      "errorMessage": "NULL",
+      "startedAt": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tstatus\tcompletedHotels\ttotalHotels\terrorMessage\tstartedAt\n300002\tcompleted\t0\t1\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 1521
+}

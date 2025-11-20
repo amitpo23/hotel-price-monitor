@@ -1,0 +1,17 @@
+{
+  "query": "SELECT errorMessage, createdAt FROM scraperErrors ORDER BY id DESC LIMIT 1",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3gaYF7se9kVaEXG.b9054b9f64d3 --database N26k37rfuZW3JrMwUJG4CN --execute SELECT errorMessage, createdAt FROM scraperErrors ORDER BY id DESC LIMIT 1",
+  "rows": [
+    {
+      "errorMessage": "",
+      "createdAt": "2025-11-20 12:24:18"
+    }
+  ],
+  "messages": [
+    "Command failed: python3.11 \"/usr/src/app/scripts/booking_scraper.py\" \"https://www.booking.com/hotel/il/the-jaffa.html\" \"2025-11-20\" 60 '[\"room_only\",\"with_breakfast\"]'",
+    "/bin/sh: 1: python3.11: not found"
+  ],
+  "stdout": "errorMessage\tcreatedAt\nCommand failed: python3.11 \"/usr/src/app/scripts/booking_scraper.py\" \"https://www.booking.com/hotel/il/the-jaffa.html\" \"2025-11-20\" 60 '[\"room_only\",\"with_breakfast\"]'\n/bin/sh: 1: python3.11: not found\n\t2025-11-20 12:24:18\n",
+  "stderr": "",
+  "execution_time_ms": 1617
+}

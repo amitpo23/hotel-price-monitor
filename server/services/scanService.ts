@@ -99,7 +99,7 @@ export async function executeScan(configId: number): Promise<ScanProgress> {
           const startDateStr = startDate.toISOString().split('T')[0];
           const roomTypesJson = JSON.stringify(roomTypes);
 
-          const command = `python3.11 "${pythonScript}" "${hotel.bookingUrl}" "${startDateStr}" ${config.daysForward} '${roomTypesJson}'`;
+          const command = `python3 "${pythonScript}" "${hotel.bookingUrl}" "${startDateStr}" ${config.daysForward} '${roomTypesJson}'`;
 
           console.log(`[ScanService] 🐍 Executing Python scraper...`);
           console.log(`[ScanService] Command: ${command}`);

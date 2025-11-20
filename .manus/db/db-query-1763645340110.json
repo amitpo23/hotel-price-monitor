@@ -1,0 +1,13 @@
+{
+  "query": "SELECT COUNT(*) as resultCount FROM scanResults WHERE scanId = 270001",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3gaYF7se9kVaEXG.b9054b9f64d3 --database N26k37rfuZW3JrMwUJG4CN --execute SELECT COUNT(*) as resultCount FROM scanResults WHERE scanId = 270001",
+  "rows": [
+    {
+      "resultCount": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "resultCount\n0\n",
+  "stderr": "",
+  "execution_time_ms": 1620
+}

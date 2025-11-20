@@ -1,0 +1,17 @@
+{
+  "query": "SELECT id, status, totalHotels, completedHotels, startedAt FROM scans ORDER BY id DESC LIMIT 1",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3gaYF7se9kVaEXG.b9054b9f64d3 --database N26k37rfuZW3JrMwUJG4CN --execute SELECT id, status, totalHotels, completedHotels, startedAt FROM scans ORDER BY id DESC LIMIT 1",
+  "rows": [
+    {
+      "id": "300005",
+      "status": "completed",
+      "totalHotels": "1",
+      "completedHotels": "1",
+      "startedAt": "2025-11-20 13:49:49"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tstatus\ttotalHotels\tcompletedHotels\tstartedAt\n300005\tcompleted\t1\t1\t2025-11-20 13:49:49\n",
+  "stderr": "",
+  "execution_time_ms": 1569
+}
