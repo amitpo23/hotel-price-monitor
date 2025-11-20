@@ -1,9 +1,9 @@
 [phases.setup]
 nixPkgs = ["nodejs_20", "python311", "python311Packages.pip"]
+cmds = ["corepack enable && corepack prepare pnpm@latest --activate"]
 
 [phases.install]
 cmds = [
-    "npm install -g pnpm@latest",
     "pnpm install --frozen-lockfile",
     "pnpm exec playwright install --with-deps chromium"
 ]
