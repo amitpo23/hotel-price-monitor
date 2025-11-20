@@ -1,13 +1,15 @@
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and, gte, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { 
+import {
   InsertUser, users,
   hotels, InsertHotel,
   scanConfigs, InsertScanConfig,
   scanConfigHotels,
   scanSchedules, InsertScanSchedule,
   scans, InsertScan,
-  scanResults, InsertScanResult
+  scanResults, InsertScanResult,
+  scraperErrors, InsertScraperError,
+  scrapeSnapshots, InsertScrapeSnapshot
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -248,6 +250,7 @@ export async function updateScan(id: number, data: Partial<InsertScan>) {
 export async function createScanResult(result: InsertScanResult) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
+  console.log(`[DB] 💾 Creating scan result: scanId=${result.scanId}, hotelId=${result.hotelId}, date=${result.checkInDate}, type=${result.roomType}, price=${result.price}`);
   return db.insert(scanResults).values(result);
 }
 
@@ -258,8 +261,12 @@ export async function getScanResults(scanId: number) {
 }
 
 export async function getScanResultsWithHotels(scanId: number) {
+  console.log(`[DB] 🔍 getScanResultsWithHotels called for scanId: ${scanId}`);
   const db = await getDb();
-  if (!db) return [];
+  if (!db) {
+    console.error(`[DB] ❌ Database not available`);
+    return [];
+  }
   const result = await db
     .select({
       result: scanResults,
@@ -268,28 +275,207 @@ export async function getScanResultsWithHotels(scanId: number) {
     .from(scanResults)
     .innerJoin(hotels, eq(scanResults.hotelId, hotels.id))
     .where(eq(scanResults.scanId, scanId));
+  console.log(`[DB] ✅ Found ${result.length} scan results with hotels for scanId ${scanId}`);
   return result;
 }
 
 export async function getLatestScanResultsForConfig(scanConfigId: number) {
+  console.log(`[DB] 🔍 getLatestScanResultsForConfig called for configId: ${scanConfigId}`);
   const db = await getDb();
-  if (!db) return [];
-
-  // Get the latest completed scan for this config
-  // Order by id DESC to get the most recent scan reliably
-  const latestScan = await db.select()
-    .from(scans)
-    .where(eq(scans.scanConfigId, scanConfigId))
-    .orderBy(desc(scans.id))
-    .limit(1);
-
-  if (!latestScan[0]) return [];
-
-  // Only return results if scan is completed
-  if (latestScan[0].status !== 'completed') {
-    console.log(`[DB] Latest scan ${latestScan[0].id} is still ${latestScan[0].status}`);
+  if (!db) {
+    console.error(`[DB] ❌ Database not available`);
     return [];
   }
 
-  return getScanResultsWithHotels(latestScan[0].id);
+  // Get the latest scan for this config (use createdAt instead of completedAt)
+  // This ensures we get scans even if they're still running or just completed
+  console.log(`[DB] 📋 Fetching latest scan for config ${scanConfigId}...`);
+  const latestScan = await db.select()
+    .from(scans)
+    .where(eq(scans.scanConfigId, scanConfigId))
+    .orderBy(desc(scans.createdAt))  // Changed from completedAt to createdAt
+    .limit(1);
+
+  if (!latestScan[0]) {
+    console.log(`[DB] ⚠️  No scans found for config ${scanConfigId}`);
+    return [];
+  }
+
+  console.log(`[DB] ✅ Found latest scan: ID ${latestScan[0].id}, status: ${latestScan[0].status}, created: ${latestScan[0].createdAt}`);
+
+  const results = await getScanResultsWithHotels(latestScan[0].id);
+  console.log(`[DB] 📊 Returning ${results.length} results for scan ${latestScan[0].id}`);
+  return results;
+}
+
+// Scraper Error Tracking
+export async function createScraperError(error: InsertScraperError) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  console.log(`[DB] ⚠️  Logging scraper error: type=${error.errorType}, hotel=${error.hotelId}`);
+  return db.insert(scraperErrors).values(error);
+}
+
+export async function getScraperErrors(hotelId?: number, sinceMinutes?: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  let whereConditions = [];
+
+  if (hotelId) {
+    whereConditions.push(eq(scraperErrors.hotelId, hotelId));
+  }
+
+  if (sinceMinutes) {
+    const cutoffTime = new Date(Date.now() - sinceMinutes * 60 * 1000);
+    whereConditions.push(gte(scraperErrors.createdAt, cutoffTime));
+  }
+
+  if (whereConditions.length === 0) {
+    return db.select().from(scraperErrors).orderBy(desc(scraperErrors.createdAt)).limit(100);
+  }
+
+  return db.select()
+    .from(scraperErrors)
+    .where(and(...whereConditions))
+    .orderBy(desc(scraperErrors.createdAt))
+    .limit(100);
+}
+
+export async function getScraperErrorStats(sinceMinutes = 1440) {
+  const db = await getDb();
+  if (!db) return null;
+
+  const cutoffTime = new Date(Date.now() - sinceMinutes * 60 * 1000);
+
+  // Get error counts by type
+  const errorsByType = await db
+    .select({
+      errorType: scraperErrors.errorType,
+      count: sql<number>`count(*)`,
+    })
+    .from(scraperErrors)
+    .where(gte(scraperErrors.createdAt, cutoffTime))
+    .groupBy(scraperErrors.errorType);
+
+  // Get error counts by hotel
+  const errorsByHotel = await db
+    .select({
+      hotelId: scraperErrors.hotelId,
+      hotelName: hotels.name,
+      count: sql<number>`count(*)`,
+    })
+    .from(scraperErrors)
+    .leftJoin(hotels, eq(scraperErrors.hotelId, hotels.id))
+    .where(gte(scraperErrors.createdAt, cutoffTime))
+    .groupBy(scraperErrors.hotelId, hotels.name);
+
+  // Get total error count
+  const totalErrors = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(scraperErrors)
+    .where(gte(scraperErrors.createdAt, cutoffTime));
+
+  return {
+    totalErrors: totalErrors[0]?.count || 0,
+    errorsByType,
+    errorsByHotel,
+    timeWindowMinutes: sinceMinutes,
+  };
+}
+
+// Scrape Snapshots
+export async function createScrapeSnapshot(snapshot: InsertScrapeSnapshot) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  console.log(`[DB] 📸 Saving scrape snapshot: type=${snapshot.snapshotType}, hotel=${snapshot.hotelId}, size=${snapshot.dataSize}`);
+  return db.insert(scrapeSnapshots).values(snapshot);
+}
+
+export async function getScrapeSnapshot(snapshotId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(scrapeSnapshots).where(eq(scrapeSnapshots.id, snapshotId)).limit(1);
+  return result[0] || null;
+}
+
+export async function getSnapshotsForScan(scanId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select()
+    .from(scrapeSnapshots)
+    .where(eq(scrapeSnapshots.scanId, scanId))
+    .orderBy(desc(scrapeSnapshots.createdAt));
+}
+
+// Health Monitoring
+export async function getScrapeHealthSummary(sinceMinutes = 1440) {
+  const db = await getDb();
+  if (!db) return null;
+
+  const cutoffTime = new Date(Date.now() - sinceMinutes * 60 * 1000);
+
+  // Total scans
+  const totalScans = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(scans)
+    .where(gte(scans.createdAt, cutoffTime));
+
+  // Completed scans
+  const completedScans = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(scans)
+    .where(and(
+      gte(scans.createdAt, cutoffTime),
+      eq(scans.status, "completed")
+    ));
+
+  // Failed scans
+  const failedScans = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(scans)
+    .where(and(
+      gte(scans.createdAt, cutoffTime),
+      eq(scans.status, "failed")
+    ));
+
+  // Average results per scan
+  const avgResultsPerScan = await db
+    .select({
+      avgResults: sql<number>`avg(result_count)`,
+    })
+    .from(
+      db.select({
+        scanId: scanResults.scanId,
+        result_count: sql<number>`count(*)`.as('result_count'),
+      })
+      .from(scanResults)
+      .innerJoin(scans, eq(scanResults.scanId, scans.id))
+      .where(gte(scans.createdAt, cutoffTime))
+      .groupBy(scanResults.scanId)
+      .as('scan_counts')
+    );
+
+  // Total errors
+  const totalErrors = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(scraperErrors)
+    .where(gte(scraperErrors.createdAt, cutoffTime));
+
+  const total = totalScans[0]?.count || 0;
+  const completed = completedScans[0]?.count || 0;
+  const failed = failedScans[0]?.count || 0;
+  const errors = totalErrors[0]?.count || 0;
+
+  return {
+    timeWindowMinutes: sinceMinutes,
+    totalScans: total,
+    completedScans: completed,
+    failedScans: failed,
+    runningScans: total - completed - failed,
+    successRate: total > 0 ? Math.round((completed / total) * 100) : 0,
+    averageResultsPerScan: Math.round(avgResultsPerScan[0]?.avgResults || 0),
+    totalErrors: errors,
+    errorRate: total > 0 ? Math.round((errors / total) * 100) : 0,
+  };
 }

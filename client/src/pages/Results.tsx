@@ -20,25 +20,56 @@ import {
 } from "@/components/ui/table";
 import { trpc } from "@/lib/trpc";
 import { BarChart3, Download, FileSpreadsheet } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 export default function Results() {
   const { user, loading: authLoading } = useAuth();
   const [selectedConfigId, setSelectedConfigId] = useState<string>("");
 
+  console.log("[Results] Component rendered");
+  console.log("[Results] User:", user);
+  console.log("[Results] Selected Config ID:", selectedConfigId);
+
+  useEffect(() => {
+    console.log("[Results] selectedConfigId changed to:", selectedConfigId);
+  }, [selectedConfigId]);
+
   const { data: configs, isLoading: configsLoading } = trpc.scans.configs.list.useQuery(undefined, {
     enabled: !!user,
+    onSuccess: (data) => {
+      console.log("[Results] Configs loaded:", data);
+    },
+    onError: (error) => {
+      console.error("[Results] Error loading configs:", error);
+    },
   });
 
   const { data: results, isLoading: resultsLoading, refetch } = trpc.scans.results.getLatest.useQuery(
     { configId: parseInt(selectedConfigId) },
-    { enabled: !!selectedConfigId }
+    {
+      enabled: !!selectedConfigId,
+      onSuccess: (data) => {
+        console.log("[Results] Results loaded:", data);
+        console.log("[Results] Number of results:", data?.length || 0);
+      },
+      onError: (error) => {
+        console.error("[Results] Error loading results:", error);
+      },
+    }
   );
 
   const { data: stats } = trpc.scans.results.getStats.useQuery(
     { configId: parseInt(selectedConfigId) },
-    { enabled: !!selectedConfigId }
+    {
+      enabled: !!selectedConfigId,
+      onSuccess: (data) => {
+        console.log("[Results] Stats loaded:", data);
+      },
+      onError: (error) => {
+        console.error("[Results] Error loading stats:", error);
+      },
+    }
   );
 
   // Transform results for chart
