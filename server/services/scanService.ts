@@ -105,7 +105,8 @@ export async function executeScan(configId: number): Promise<ScanProgress> {
           }
 
           console.log(`[ScanService] 📦 Parsing scraper output...`);
-          const results = JSON.parse(stdout.trim()) as Array<{
+          const rawOutput = stdout.trim();
+          const results = JSON.parse(rawOutput) as Array<{
             date: string;
             roomType: 'room_only' | 'with_breakfast';
             price: number;
@@ -113,6 +114,22 @@ export async function executeScan(configId: number): Promise<ScanProgress> {
           }>;
 
           console.log(`[ScanService] ✅ Received ${results.length} results from scraper`);
+
+          // Save raw scraper output as snapshot for debugging
+          try {
+            await db.createScrapeSnapshot({
+              scanId,
+              hotelId: hotel.id,
+              snapshotType: 'raw_json',
+              data: rawOutput,
+              dataSize: rawOutput.length,
+              checkInDate: startDateStr,
+            });
+            console.log(`[ScanService] 📸 Saved scraper snapshot for debugging`);
+          } catch (snapshotError) {
+            console.error(`[ScanService] Warning: Failed to save snapshot:`, snapshotError);
+            // Don't fail the scan if snapshot save fails
+          }
 
           // Save results to database
           console.log(`[ScanService] 💾 Saving results to database...`);
@@ -140,6 +157,41 @@ export async function executeScan(configId: number): Promise<ScanProgress> {
           console.error(`[ScanService] ❌ ERROR scanning hotel ${hotel.name}:`, error);
           console.error(`[ScanService] Error details:`, error instanceof Error ? error.message : String(error));
           console.error(`[ScanService] Stack trace:`, error instanceof Error ? error.stack : 'No stack trace');
+
+          // Log error to database for monitoring
+          try {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            const stackTrace = error instanceof Error ? error.stack : undefined;
+
+            // Determine error type based on error message
+            let errorType: 'timeout' | 'network_error' | 'parsing_failed' | 'other' = 'other';
+            if (errorMessage.includes('timeout') || errorMessage.includes('ETIMEDOUT')) {
+              errorType = 'timeout';
+            } else if (errorMessage.includes('ECONNREFUSED') || errorMessage.includes('ENOTFOUND') || errorMessage.includes('network')) {
+              errorType = 'network_error';
+            } else if (errorMessage.includes('JSON') || errorMessage.includes('parse')) {
+              errorType = 'parsing_failed';
+            }
+
+            await db.createScraperError({
+              scanId,
+              hotelId: hotel.id,
+              errorType,
+              errorMessage,
+              stackTrace: stackTrace || undefined,
+              url: hotel.bookingUrl,
+              checkInDate: startDate.toISOString().split('T')[0],
+              metadata: JSON.stringify({
+                command: `python3 booking_scraper.py ...`,
+                daysForward: config.daysForward,
+                roomTypes,
+              }),
+            });
+            console.log(`[ScanService] 📝 Error logged to monitoring database`);
+          } catch (logError) {
+            console.error(`[ScanService] Warning: Failed to log error:`, logError);
+          }
+
           // Continue with next hotel
         }
       }

@@ -94,6 +94,32 @@ export const scanResults = mysqlTable("scanResults", {
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
+// Scraper error tracking for debugging and monitoring
+export const scraperErrors = mysqlTable("scraperErrors", {
+  id: int("id").autoincrement().primaryKey(),
+  scanId: int("scanId").references(() => scans.id, { onDelete: "cascade" }),
+  hotelId: int("hotelId").references(() => hotels.id),
+  errorType: mysqlEnum("errorType", ["timeout", "captcha", "parsing_failed", "network_error", "selector_not_found", "rate_limit", "other"]).notNull(),
+  errorMessage: text("errorMessage").notNull(),
+  stackTrace: text("stackTrace"),
+  url: text("url"),
+  checkInDate: varchar("checkInDate", { length: 10 }), // Date being scraped when error occurred
+  metadata: text("metadata"), // JSON: additional context like browser version, selectors tried, etc.
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+// Store raw scraper output for debugging
+export const scrapeSnapshots = mysqlTable("scrapeSnapshots", {
+  id: int("id").autoincrement().primaryKey(),
+  scanId: int("scanId").notNull().references(() => scans.id, { onDelete: "cascade" }),
+  hotelId: int("hotelId").notNull().references(() => hotels.id),
+  snapshotType: mysqlEnum("snapshotType", ["raw_json", "html_sample", "screenshot"]).notNull(),
+  data: text("data").notNull(), // JSON or HTML content (compressed/truncated if needed)
+  dataSize: int("dataSize"), // Size in bytes before storage
+  checkInDate: varchar("checkInDate", { length: 10 }), // Date being scraped
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
 export type Hotel = typeof hotels.$inferSelect;
 export type InsertHotel = typeof hotels.$inferInsert;
 export type ScanConfig = typeof scanConfigs.$inferSelect;
@@ -104,3 +130,7 @@ export type Scan = typeof scans.$inferSelect;
 export type InsertScan = typeof scans.$inferInsert;
 export type ScanResult = typeof scanResults.$inferSelect;
 export type InsertScanResult = typeof scanResults.$inferInsert;
+export type ScraperError = typeof scraperErrors.$inferSelect;
+export type InsertScraperError = typeof scraperErrors.$inferInsert;
+export type ScrapeSnapshot = typeof scrapeSnapshots.$inferSelect;
+export type InsertScrapeSnapshot = typeof scrapeSnapshots.$inferInsert;
