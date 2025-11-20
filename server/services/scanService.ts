@@ -41,6 +41,7 @@ export async function executeScan(configId: number): Promise<ScanProgress> {
     status: "running",
     totalHotels: hotels.length,
     completedHotels: 0,
+    startedAt: new Date(),
   });
 
   // Drizzle returns an array with insertId in the first element
@@ -85,6 +86,7 @@ export async function executeScan(configId: number): Promise<ScanProgress> {
           }>;
 
           // Save results to database
+          console.log(`[ScanService] Saving ${results.length} results for hotel ${hotel.name}`);
           for (const result of results) {
             await db.createScanResult({
               scanId,
@@ -95,6 +97,7 @@ export async function executeScan(configId: number): Promise<ScanProgress> {
               isAvailable: result.available ? 1 : 0,
             });
           }
+          console.log(`[ScanService] Saved all results for hotel ${hotel.name}`);
 
           progress.completedHotels++;
           await db.updateScan(scanId, {
