@@ -248,6 +248,7 @@ export async function updateScan(id: number, data: Partial<InsertScan>) {
 export async function createScanResult(result: InsertScanResult) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
+  console.log(`[DB] 💾 Creating scan result: scanId=${result.scanId}, hotelId=${result.hotelId}, date=${result.checkInDate}, type=${result.roomType}, price=${result.price}`);
   return db.insert(scanResults).values(result);
 }
 
@@ -258,8 +259,12 @@ export async function getScanResults(scanId: number) {
 }
 
 export async function getScanResultsWithHotels(scanId: number) {
+  console.log(`[DB] 🔍 getScanResultsWithHotels called for scanId: ${scanId}`);
   const db = await getDb();
-  if (!db) return [];
+  if (!db) {
+    console.error(`[DB] ❌ Database not available`);
+    return [];
+  }
   const result = await db
     .select({
       result: scanResults,
@@ -268,21 +273,35 @@ export async function getScanResultsWithHotels(scanId: number) {
     .from(scanResults)
     .innerJoin(hotels, eq(scanResults.hotelId, hotels.id))
     .where(eq(scanResults.scanId, scanId));
+  console.log(`[DB] ✅ Found ${result.length} scan results with hotels for scanId ${scanId}`);
   return result;
 }
 
 export async function getLatestScanResultsForConfig(scanConfigId: number) {
+  console.log(`[DB] 🔍 getLatestScanResultsForConfig called for configId: ${scanConfigId}`);
   const db = await getDb();
-  if (!db) return [];
-  
-  // Get the latest completed scan for this config
+  if (!db) {
+    console.error(`[DB] ❌ Database not available`);
+    return [];
+  }
+
+  // Get the latest scan for this config (use createdAt instead of completedAt)
+  // This ensures we get scans even if they're still running or just completed
+  console.log(`[DB] 📋 Fetching latest scan for config ${scanConfigId}...`);
   const latestScan = await db.select()
     .from(scans)
     .where(eq(scans.scanConfigId, scanConfigId))
-    .orderBy(desc(scans.completedAt))
+    .orderBy(desc(scans.createdAt))  // Changed from completedAt to createdAt
     .limit(1);
-  
-  if (!latestScan[0]) return [];
-  
-  return getScanResultsWithHotels(latestScan[0].id);
+
+  if (!latestScan[0]) {
+    console.log(`[DB] ⚠️  No scans found for config ${scanConfigId}`);
+    return [];
+  }
+
+  console.log(`[DB] ✅ Found latest scan: ID ${latestScan[0].id}, status: ${latestScan[0].status}, created: ${latestScan[0].createdAt}`);
+
+  const results = await getScanResultsWithHotels(latestScan[0].id);
+  console.log(`[DB] 📊 Returning ${results.length} results for scan ${latestScan[0].id}`);
+  return results;
 }
