@@ -1,0 +1,16 @@
+{
+  "query": "SELECT id, name, daysForward, roomTypes FROM scanConfigs WHERE isActive = 1 LIMIT 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3gaYF7se9kVaEXG.b9054b9f64d3 --database N26k37rfuZW3JrMwUJG4CN --execute SELECT id, name, daysForward, roomTypes FROM scanConfigs WHERE isActive = 1 LIMIT 1;",
+  "rows": [
+    {
+      "id": "30001",
+      "name": "Scarlet vs Competitors - Daily Scan",
+      "daysForward": "60",
+      "roomTypes": "[\"room_only\",\"with_breakfast\"]"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tdaysForward\troomTypes\n30001\tScarlet vs Competitors - Daily Scan\t60\t[\"room_only\",\"with_breakfast\"]\n",
+  "stderr": "",
+  "execution_time_ms": 2184
+}
