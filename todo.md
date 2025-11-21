@@ -270,3 +270,120 @@
 - [ ] Test OnlyNight API integration
 - [ ] Save checkpoint with all new features
 - [ ] Deploy to Railway
+
+
+## 🎯 Critical Features Implementation (User Request)
+
+### 1. Calendar View (תצוגת לוח שנה)
+- [x] Create calendar component with date grid
+- [x] Display prices for each date
+- [x] Color coding by competitiveness (green=competitive, red=expensive)
+- [x] Inline price editing from calendar
+- [x] Month/week/day views
+- [x] Competitor prices overlay
+- [x] Quick actions (copy prices, apply template)
+
+### 2. Revenue Management Dashboard
+- [x] Calculate and display KPIs:
+  - [x] RevPAR (Revenue Per Available Room)
+  - [x] ADR (Average Daily Rate)
+  - [x] Occupancy Rate
+- [x] Revenue forecasting charts
+- [x] Period comparison (YoY, MoM, WoW)
+- [x] Break-even analysis
+- [x] Revenue optimization suggestions
+
+### 3. Dynamic Pricing Engine
+- [ ] Create pricing rules engine
+- [ ] Demand-based pricing algorithm
+- [ ] Competitor-based pricing algorithm
+- [ ] Time-based pricing rules
+- [ ] Automated price updates
+- [ ] Price change history tracking
+- [ ] Manual override capabilities
+- [ ] Pricing strategy templates
+
+### 4. Demand Forecasting
+- [ ] Collect historical occupancy data
+- [ ] ML model for demand prediction
+- [ ] Seasonality analysis
+- [ ] Local events integration
+- [ ] Price recommendations based on forecast
+- [ ] Confidence intervals for predictions
+- [ ] Forecast accuracy tracking
+
+### 5. Competitor Intelligence
+- [ ] Real-time price change alerts
+- [ ] Competitor pricing strategy analysis
+- [ ] Market positioning score calculation
+- [ ] Price gap analysis
+- [ ] Competitive advantage indicators
+- [ ] Alert notification system
+
+### 6. Rate Parity Monitoring
+- [ ] Multi-platform price scraping (Booking, Expedia, Direct)
+- [ ] Rate parity violation detection
+- [ ] Automated alerts for discrepancies
+- [ ] Platform comparison dashboard
+
+### 7. Bulk Price Updates
+- [ ] Bulk price update UI
+- [ ] Pricing templates system
+- [ ] Rule-based automatic updates
+- [ ] Date range selection
+- [ ] Preview before apply
+- [ ] Rollback functionality
+
+### 8. Guest Segmentation
+- [ ] Guest type classification (business, leisure, families)
+- [ ] Segment-specific pricing
+- [ ] Special rates management
+- [ ] Segment performance analytics
+
+### 9. Cancellation Policy Optimizer
+- [ ] Policy impact analysis
+- [ ] Revenue vs risk calculator
+- [ ] Policy recommendations
+- [ ] A/B testing framework
+
+### 10. Integration Hub
+- [ ] PMS integration framework
+- [ ] Channel Manager integration
+- [ ] Webhook system for price changes
+- [ ] API documentation
+
+## 🚀 Advanced Features (Nice to Have)
+
+### 11. Multi-Property Management
+- [ ] Multi-hotel selector
+- [ ] Cross-property comparison
+- [ ] Consolidated reporting
+- [ ] Property groups
+
+### 12. API for External Systems
+- [ ] REST API endpoints
+- [ ] Webhook notifications
+- [ ] API authentication
+- [ ] Rate limiting
+- [ ] API documentation
+
+### 13. Advanced Analytics
+- [ ] Cohort analysis
+- [ ] Funnel analysis
+- [ ] Attribution modeling
+- [ ] Custom metrics builder
+
+### 14. Automated Reporting
+- [ ] Weekly/monthly report scheduler
+- [ ] Custom report builder
+- [ ] Export to PowerPoint/PDF
+- [ ] Email distribution
+
+## 🎨 UX Improvements
+
+- [ ] Onboarding wizard for new users
+- [ ] Dashboard customization
+- [ ] Dark/Light mode toggle
+- [ ] Keyboard shortcuts
+- [ ] Bulk actions UI
+- [ ] Improved mobile responsiveness

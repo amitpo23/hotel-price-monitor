@@ -29,6 +29,13 @@
       "when": 1763717788704,
       "tag": "0003_shiny_monster_badoon",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1763719745820,
+      "tag": "0004_fine_spot",
+      "breakpoints": true
     }
   ]
 }
