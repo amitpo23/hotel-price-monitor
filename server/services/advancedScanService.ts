@@ -154,7 +154,7 @@ export async function executeAdvancedScan(
             await db.createScrapeSnapshot({
               scanId,
               hotelId: hotel.id,
-              snapshotType: 'advanced_scraper_results',
+              snapshotType: 'raw_json',
               data: JSON.stringify(results, null, 2),
               dataSize: JSON.stringify(results).length,
               checkInDate: startDate.toISOString().split('T')[0],

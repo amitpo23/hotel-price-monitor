@@ -1,0 +1,43 @@
+{
+  "query": "SELECT * FROM scanConfigs LIMIT 5",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3gaYF7se9kVaEXG.b9054b9f64d3 --database N26k37rfuZW3JrMwUJG4CN --execute SELECT * FROM scanConfigs LIMIT 5",
+  "rows": [
+    {
+      "id": "30001",
+      "name": "Scarlet vs Competitors - Daily Scan",
+      "targetHotelId": "1",
+      "daysForward": "7",
+      "roomTypes": "[\"room_only\",\"with_breakfast\"]",
+      "isActive": "1",
+      "createdBy": "1",
+      "createdAt": "2025-11-18 07:21:51",
+      "updatedAt": "2025-11-20 13:31:47"
+    },
+    {
+      "id": "60001",
+      "name": "scarlet hotel vs devora",
+      "targetHotelId": "1",
+      "daysForward": "30",
+      "roomTypes": "[\"room_only\",\"with_breakfast\"]",
+      "isActive": "1",
+      "createdBy": "1",
+      "createdAt": "2025-11-20 08:20:06",
+      "updatedAt": "2025-11-20 08:20:06"
+    },
+    {
+      "id": "90001",
+      "name": "scarlet hotel 1630",
+      "targetHotelId": "1",
+      "daysForward": "14",
+      "roomTypes": "[\"room_only\",\"with_breakfast\"]",
+      "isActive": "1",
+      "createdBy": "1",
+      "createdAt": "2025-11-20 14:28:52",
+      "updatedAt": "2025-11-20 14:28:52"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\ttargetHotelId\tdaysForward\troomTypes\tisActive\tcreatedBy\tcreatedAt\tupdatedAt\n30001\tScarlet vs Competitors - Daily Scan\t1\t7\t[\"room_only\",\"with_breakfast\"]\t1\t1\t2025-11-18 07:21:51\t2025-11-20 13:31:47\n60001\tscarlet hotel vs devora\t1\t30\t[\"room_only\",\"with_breakfast\"]\t1\t1\t2025-11-20 08:20:06\t2025-11-20 08:20:06\n90001\tscarlet hotel 1630\t1\t14\t[\"room_only\",\"with_breakfast\"]\t1\t1\t2025-11-20 14:28:52\t2025-11-20 14:28:52\n",
+  "stderr": "",
+  "execution_time_ms": 1597
+}
