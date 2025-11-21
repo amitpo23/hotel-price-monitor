@@ -9,6 +9,8 @@ import Hotels from "./pages/Hotels";
 import ScanConfigs from "./pages/ScanConfigs";
 import Results from "./pages/Results";
 import Monitoring from "./pages/Monitoring";
+import AIChat from "./pages/AIChat";
+import PricingDashboard from "./pages/PricingDashboard";
 
 function Router() {
   return (
@@ -18,6 +20,8 @@ function Router() {
       <Route path={"/scans"} component={ScanConfigs} />
       <Route path={"/results"} component={Results} />
       <Route path={"/monitoring"} component={Monitoring} />
+      <Route path={"/ai-chat"} component={AIChat} />
+      <Route path={"/pricing"} component={PricingDashboard} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>

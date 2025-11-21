@@ -2,7 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Building2, ScanLine, BarChart3, TrendingUp } from "lucide-react";
+import { Building2, ScanLine, BarChart3, TrendingUp, Bot, DollarSign } from "lucide-react";
 import { Link } from "wouter";
 
 export default function Home() {
@@ -122,6 +122,92 @@ export default function Home() {
             </div>
           </CardContent>
         </Card>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <DollarSign className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <CardTitle>Pricing AI Dashboard</CardTitle>
+                  <CardDescription>
+                    Get intelligent pricing recommendations powered by AI
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <ul className="text-sm space-y-2 text-muted-foreground">
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
+                  AI-powered price recommendations based on market analysis
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
+                  Real-time competitor positioning and market insights
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
+                  Automated alerts for price changes and opportunities
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
+                  Revenue optimization strategies for maximum profitability
+                </li>
+              </ul>
+              <Link href="/pricing">
+                <Button className="w-full">
+                  <DollarSign className="w-4 h-4 mr-2" />
+                  Open Pricing Dashboard
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <Bot className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <CardTitle>AI Chat Assistant</CardTitle>
+                  <CardDescription>
+                    Ask questions about your pricing data in natural language
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <ul className="text-sm space-y-2 text-muted-foreground">
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
+                  Query pricing data using natural language
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
+                  Get instant competitor comparisons and market analysis
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
+                  Receive pricing recommendations with detailed reasoning
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
+                  Identify trends and patterns in historical data
+                </li>
+              </ul>
+              <Link href="/ai-chat">
+                <Button className="w-full">
+                  <Bot className="w-4 h-4 mr-2" />
+                  Start AI Conversation
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </DashboardLayout>
   );

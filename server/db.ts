@@ -9,7 +9,11 @@ import {
   scans, InsertScan,
   scanResults, InsertScanResult,
   scraperErrors, InsertScraperError,
-  scrapeSnapshots, InsertScrapeSnapshot
+  scrapeSnapshots, InsertScrapeSnapshot,
+  chatConversations, InsertChatConversation,
+  chatMessages, InsertChatMessage,
+  priceRecommendations, InsertPriceRecommendation,
+  pricingAlerts, InsertPricingAlert
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -382,6 +386,119 @@ export async function getScraperErrorStats(sinceMinutes = 1440) {
     errorsByHotel,
     timeWindowMinutes: sinceMinutes,
   };
+}
+
+// AI Chat Functions
+export async function createChatConversation(userId: number, title?: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(chatConversations).values({ userId, title });
+  return result;
+}
+
+export async function getChatConversations(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(chatConversations)
+    .where(eq(chatConversations.userId, userId))
+    .orderBy(desc(chatConversations.updatedAt));
+}
+
+export async function createChatMessage(message: InsertChatMessage) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.insert(chatMessages).values(message);
+}
+
+export async function getChatMessages(conversationId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(chatMessages)
+    .where(eq(chatMessages.conversationId, conversationId))
+    .orderBy(chatMessages.createdAt);
+}
+
+export async function deleteChatConversation(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.delete(chatConversations).where(eq(chatConversations.id, id));
+}
+
+// Price Recommendations
+export async function createPriceRecommendation(recommendation: InsertPriceRecommendation) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  console.log(`[DB] 💡 Creating price recommendation: hotel=${recommendation.hotelId}, date=${recommendation.checkInDate}, recommended=₪${recommendation.recommendedPrice}`);
+  return db.insert(priceRecommendations).values(recommendation);
+}
+
+export async function getPriceRecommendations(hotelId: number, fromDate?: string, toDate?: string) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  let whereConditions = [eq(priceRecommendations.hotelId, hotelId)];
+  
+  if (fromDate) {
+    whereConditions.push(gte(priceRecommendations.checkInDate, fromDate));
+  }
+  
+  return db.select()
+    .from(priceRecommendations)
+    .where(and(...whereConditions))
+    .orderBy(priceRecommendations.checkInDate);
+}
+
+export async function getLatestPriceRecommendation(hotelId: number, checkInDate: string, roomType: string) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.select()
+    .from(priceRecommendations)
+    .where(and(
+      eq(priceRecommendations.hotelId, hotelId),
+      eq(priceRecommendations.checkInDate, checkInDate),
+      eq(priceRecommendations.roomType, roomType as any)
+    ))
+    .orderBy(desc(priceRecommendations.createdAt))
+    .limit(1);
+  
+  return result[0] || null;
+}
+
+// Pricing Alerts
+export async function createPricingAlert(alert: InsertPricingAlert) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  console.log(`[DB] 🚨 Creating pricing alert: type=${alert.alertType}, severity=${alert.severity}`);
+  return db.insert(pricingAlerts).values(alert);
+}
+
+export async function getPricingAlerts(userId: number, unreadOnly = false) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  let whereConditions = [eq(pricingAlerts.userId, userId)];
+  
+  if (unreadOnly) {
+    whereConditions.push(eq(pricingAlerts.isRead, 0));
+  }
+  
+  return db.select()
+    .from(pricingAlerts)
+    .where(and(...whereConditions))
+    .orderBy(desc(pricingAlerts.createdAt));
+}
+
+export async function markAlertAsRead(alertId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.update(pricingAlerts).set({ isRead: 1 }).where(eq(pricingAlerts.id, alertId));
+}
+
+export async function deleteAlert(alertId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.delete(pricingAlerts).where(eq(pricingAlerts.id, alertId));
 }
 
 // Scrape Snapshots

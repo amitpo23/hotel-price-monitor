@@ -134,3 +134,60 @@ export type ScraperError = typeof scraperErrors.$inferSelect;
 export type InsertScraperError = typeof scraperErrors.$inferInsert;
 export type ScrapeSnapshot = typeof scrapeSnapshots.$inferSelect;
 export type InsertScrapeSnapshot = typeof scrapeSnapshots.$inferInsert;
+
+// AI Chat Conversations
+export const chatConversations = mysqlTable("chatConversations", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().references(() => users.id),
+  title: varchar("title", { length: 255 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+// AI Chat Messages
+export const chatMessages = mysqlTable("chatMessages", {
+  id: int("id").autoincrement().primaryKey(),
+  conversationId: int("conversationId").notNull().references(() => chatConversations.id, { onDelete: "cascade" }),
+  role: mysqlEnum("role", ["user", "assistant", "system"]).notNull(),
+  content: text("content").notNull(),
+  metadata: text("metadata"), // JSON: query results, charts data, etc.
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+// Price Recommendations
+export const priceRecommendations = mysqlTable("priceRecommendations", {
+  id: int("id").autoincrement().primaryKey(),
+  hotelId: int("hotelId").notNull().references(() => hotels.id),
+  checkInDate: varchar("checkInDate", { length: 10 }).notNull(),
+  roomType: mysqlEnum("roomType", ["room_only", "with_breakfast"]).notNull(),
+  currentPrice: int("currentPrice"), // Current price in market
+  recommendedPrice: int("recommendedPrice").notNull(), // AI recommended price
+  confidence: int("confidence").default(0), // 0-100 confidence score
+  reasoning: text("reasoning"), // Explanation for the recommendation
+  marketPosition: varchar("marketPosition", { length: 50 }), // e.g., "below_market", "competitive", "premium"
+  expectedRevenue: int("expectedRevenue"), // Estimated revenue with recommended price
+  competitorAvgPrice: int("competitorAvgPrice"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+// Pricing Alerts
+export const pricingAlerts = mysqlTable("pricingAlerts", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().references(() => users.id),
+  alertType: mysqlEnum("alertType", ["price_drop", "price_increase", "market_shift", "opportunity", "warning"]).notNull(),
+  severity: mysqlEnum("severity", ["low", "medium", "high", "critical"]).default("medium").notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  message: text("message").notNull(),
+  metadata: text("metadata"), // JSON: related hotels, price changes, etc.
+  isRead: int("isRead").default(0).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type ChatConversation = typeof chatConversations.$inferSelect;
+export type InsertChatConversation = typeof chatConversations.$inferInsert;
+export type ChatMessage = typeof chatMessages.$inferSelect;
+export type InsertChatMessage = typeof chatMessages.$inferInsert;
+export type PriceRecommendation = typeof priceRecommendations.$inferSelect;
+export type InsertPriceRecommendation = typeof priceRecommendations.$inferInsert;
+export type PricingAlert = typeof pricingAlerts.$inferSelect;
+export type InsertPricingAlert = typeof pricingAlerts.$inferInsert;
