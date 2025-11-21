@@ -191,3 +191,148 @@ export type PriceRecommendation = typeof priceRecommendations.$inferSelect;
 export type InsertPriceRecommendation = typeof priceRecommendations.$inferInsert;
 export type PricingAlert = typeof pricingAlerts.$inferSelect;
 export type InsertPricingAlert = typeof pricingAlerts.$inferInsert;
+
+// Advanced Scraper Configuration - inspired by changedetection.io
+export const scraperConfigs = mysqlTable("scraperConfigs", {
+  id: int("id").autoincrement().primaryKey(),
+  hotelId: int("hotelId").notNull().references(() => hotels.id),
+  name: varchar("name", { length: 255 }).notNull(),
+  
+  // Fetcher configuration
+  fetcherType: mysqlEnum("fetcherType", ["http", "playwright"]).default("http").notNull(), // http = fast, playwright = JS-enabled
+  useProxy: int("useProxy").default(0).notNull(), // Use proxy rotation
+  proxyCountry: varchar("proxyCountry", { length: 2 }), // e.g., "IL", "US"
+  
+  // Selectors for price extraction
+  priceSelector: varchar("priceSelector", { length: 500 }), // CSS selector or XPath
+  selectorType: mysqlEnum("selectorType", ["css", "xpath", "jsonpath"]).default("css"),
+  
+  // Browser Steps (JSON array of actions for Playwright)
+  browserSteps: text("browserSteps"), // JSON: [{ action: "click", selector: "button.dates" }, ...]
+  
+  // Change detection configuration
+  changeThreshold: int("changeThreshold"), // Min price change in % to trigger alert (e.g., 5 = 5%)
+  onlyPriceDrops: int("onlyPriceDrops").default(0), // Only alert on price drops, not increases
+  
+  // Conditional triggers
+  conditionalTriggers: text("conditionalTriggers"), // JSON: [{ type: "below", value: 500 }, ...]
+  
+  // Headers and custom config
+  customHeaders: text("customHeaders"), // JSON: { "User-Agent": "...", ... }
+  
+  isActive: int("isActive").default(1).notNull(),
+  createdBy: int("createdBy").notNull().references(() => users.id),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+// Price change history for diff comparison
+export const priceChanges = mysqlTable("priceChanges", {
+  id: int("id").autoincrement().primaryKey(),
+  hotelId: int("hotelId").notNull().references(() => hotels.id),
+  checkInDate: varchar("checkInDate", { length: 10 }).notNull(),
+  roomType: mysqlEnum("roomType", ["room_only", "with_breakfast"]).notNull(),
+  
+  previousPrice: int("previousPrice"), // Previous price
+  newPrice: int("newPrice").notNull(), // New detected price
+  changeAmount: int("changeAmount").notNull(), // Absolute change
+  changePercent: int("changePercent").notNull(), // Percentage change (x100, e.g., 500 = 5%)
+  
+  changeType: mysqlEnum("changeType", ["increase", "decrease", "no_change"]).notNull(),
+  
+  // Diff data
+  diffData: text("diffData"), // JSON: detailed comparison data
+  screenshotUrl: text("screenshotUrl"), // URL to screenshot if captured
+  
+  triggeredAlert: int("triggeredAlert").default(0), // Whether this triggered an alert
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+// Proxy pool management
+export const proxyPool = mysqlTable("proxyPool", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  proxyUrl: text("proxyUrl").notNull(), // http://user:pass@host:port or socks5://...
+  country: varchar("country", { length: 2 }), // ISO country code
+  provider: varchar("provider", { length: 100 }), // e.g., "BrightData", "Oxylabs"
+  
+  // Health tracking
+  isActive: int("isActive").default(1).notNull(),
+  lastUsed: timestamp("lastUsed"),
+  successRate: int("successRate").default(100), // 0-100
+  avgResponseTime: int("avgResponseTime"), // milliseconds
+  failedAttempts: int("failedAttempts").default(0),
+  
+  // Usage stats
+  totalRequests: int("totalRequests").default(0),
+  successfulRequests: int("successfulRequests").default(0),
+  
+  createdBy: int("createdBy").notNull().references(() => users.id),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+// Visual selectors saved by users
+export const visualSelectors = mysqlTable("visualSelectors", {
+  id: int("id").autoincrement().primaryKey(),
+  hotelId: int("hotelId").notNull().references(() => hotels.id),
+  name: varchar("name", { length: 255 }).notNull(),
+  
+  // Selector definition
+  elementPath: text("elementPath").notNull(), // CSS selector or XPath
+  selectorType: mysqlEnum("selectorType", ["css", "xpath"]).default("css").notNull(),
+  
+  // Visual context
+  screenshotUrl: text("screenshotUrl"), // Screenshot with highlighted element
+  boundingBox: varchar("boundingBox", { length: 100 }), // JSON: { x, y, width, height }
+  
+  // What to extract
+  extractType: mysqlEnum("extractType", ["text", "attribute", "html"]).default("text").notNull(),
+  attributeName: varchar("attributeName", { length: 100 }), // If extractType = "attribute"
+  
+  // Validation
+  expectedPattern: varchar("expectedPattern", { length: 500 }), // Regex pattern to validate extracted value
+  
+  isActive: int("isActive").default(1).notNull(),
+  createdBy: int("createdBy").notNull().references(() => users.id),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+// Webhook configurations for notifications
+export const webhookConfigs = mysqlTable("webhookConfigs", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  
+  // Webhook details
+  webhookUrl: text("webhookUrl").notNull(),
+  method: mysqlEnum("method", ["POST", "GET", "PUT"]).default("POST").notNull(),
+  headers: text("headers"), // JSON: custom headers
+  
+  // When to trigger
+  triggerEvents: text("triggerEvents").notNull(), // JSON: ["price_drop", "scan_complete", ...]
+  
+  // Payload template (Jinja2-style)
+  payloadTemplate: text("payloadTemplate"), // JSON template with {{variables}}
+  
+  // Status
+  isActive: int("isActive").default(1).notNull(),
+  lastTriggered: timestamp("lastTriggered"),
+  successCount: int("successCount").default(0),
+  failureCount: int("failureCount").default(0),
+  
+  createdBy: int("createdBy").notNull().references(() => users.id),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ScraperConfig = typeof scraperConfigs.$inferSelect;
+export type InsertScraperConfig = typeof scraperConfigs.$inferInsert;
+export type PriceChange = typeof priceChanges.$inferSelect;
+export type InsertPriceChange = typeof priceChanges.$inferInsert;
+export type ProxyPool = typeof proxyPool.$inferSelect;
+export type InsertProxyPool = typeof proxyPool.$inferInsert;
+export type VisualSelector = typeof visualSelectors.$inferSelect;
+export type InsertVisualSelector = typeof visualSelectors.$inferInsert;
+export type WebhookConfig = typeof webhookConfigs.$inferSelect;
+export type InsertWebhookConfig = typeof webhookConfigs.$inferInsert;

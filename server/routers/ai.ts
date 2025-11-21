@@ -13,6 +13,7 @@ import {
   getScanConfigs,
   getScansForConfig,
 } from "../db";
+import { getOnlyNightApi } from "../services/onlyNightApi";
 
 // Initialize OpenAI
 const openai = new OpenAI({
@@ -100,6 +101,89 @@ const functions = [
         roomType: {
           type: "string",
           enum: ["room_only", "with_breakfast"],
+        },
+      },
+    },
+  },
+  {
+    name: "search_instant_prices",
+    description: "Search for real-time hotel prices from OnlyNight API. Use this to get live pricing for any hotel, city, or dates. Returns actual bookable offers with prices.",
+    parameters: {
+      type: "object",
+      properties: {
+        dateFrom: {
+          type: "string",
+          description: "Check-in date in YYYY-MM-DD format (required)",
+        },
+        dateTo: {
+          type: "string",
+          description: "Check-out date in YYYY-MM-DD format (required)",
+        },
+        hotelName: {
+          type: "string",
+          description: "Hotel name to search for (optional)",
+        },
+        city: {
+          type: "string",
+          description: "City name (optional)",
+        },
+        adults: {
+          type: "number",
+          description: "Number of adults (default: 2)",
+        },
+        stars: {
+          type: "number",
+          description: "Hotel star rating filter (1-5)",
+        },
+        limit: {
+          type: "number",
+          description: "Maximum number of results (default: 50)",
+        },
+      },
+      required: ["dateFrom", "dateTo"],
+    },
+  },
+  {
+    name: "get_room_archive",
+    description: "Retrieve historical room booking data from archive. Use this to analyze past bookings, pricing history, and booking patterns.",
+    parameters: {
+      type: "object",
+      properties: {
+        stayFrom: {
+          type: "string",
+          description: "Start date for stay period filter (ISO datetime or YYYY-MM-DD)",
+        },
+        stayTo: {
+          type: "string",
+          description: "End date for stay period filter (ISO datetime or YYYY-MM-DD)",
+        },
+        hotelName: {
+          type: "string",
+          description: "Filter by hotel name (partial match)",
+        },
+        city: {
+          type: "string",
+          description: "Filter by city name",
+        },
+        minPrice: {
+          type: "number",
+          description: "Minimum price filter",
+        },
+        maxPrice: {
+          type: "number",
+          description: "Maximum price filter",
+        },
+        roomBoard: {
+          type: "string",
+          description: "Room board type (e.g., 'BB' for bed & breakfast)",
+        },
+        pageNumber: {
+          type: "number",
+          description: "Page number for pagination (default: 1)",
+        },
+        pageSize: {
+          type: "number",
+          description: "Results per page (default: 50)",
         },
       },
     },
@@ -263,6 +347,119 @@ async function executeFunction(functionName: string, args: any, userId: number) 
         }));
 
         return { bestRates };
+      }
+
+      case "search_instant_prices": {
+        // Call OnlyNight API for real-time price search
+        const onlyNightApi = getOnlyNightApi();
+        
+        const searchParams = {
+          dateFrom: args.dateFrom,
+          dateTo: args.dateTo,
+          hotelName: args.hotelName,
+          city: args.city,
+          adults: args.adults || 2,
+          paxChildren: args.paxChildren,
+          stars: args.stars,
+          limit: args.limit || 50,
+        };
+
+        const apiResponse = await onlyNightApi.searchInstantPrices(searchParams);
+
+        if (!apiResponse.success) {
+          return {
+            error: apiResponse.error || "Failed to search instant prices",
+            message: "לא הצלחתי לחפש מחירים. ייתכן שה-API לא זמין או שאין תוצאות.",
+          };
+        }
+
+        // Format results for AI
+        const results = apiResponse.data?.results || [];
+        if (results.length === 0) {
+          return {
+            message: "לא נמצאו מלונות זמינים עבור התאריכים והקריטריונים המבוקשים.",
+            searchParams,
+          };
+        }
+
+        const formattedResults = results.slice(0, 15).map((r: any) => ({
+          hotelName: r.hotelName || "לא ידוע",
+          city: r.city || args.city,
+          stars: r.stars || "N/A",
+          price: r.price?.amount || "N/A",
+          currency: r.price?.currency || "ILS",
+          roomCategory: r.category || "סטנדרט",
+          roomBasis: r.roomBasis || "לא צוין",
+          availability: r.availability || "זמין",
+        }));
+
+        return {
+          success: true,
+          totalResults: results.length,
+          results: formattedResults,
+          searchParams,
+          summary: onlyNightApi.formatSearchResults(apiResponse.data),
+        };
+      }
+
+      case "get_room_archive": {
+        // Call OnlyNight API for archived room data
+        const onlyNightApi = getOnlyNightApi();
+
+        const archiveParams = {
+          stayFrom: args.stayFrom,
+          stayTo: args.stayTo,
+          hotelName: args.hotelName,
+          city: args.city,
+          minPrice: args.minPrice,
+          maxPrice: args.maxPrice,
+          roomBoard: args.roomBoard,
+          roomCategory: args.roomCategory,
+          minUpdatedAt: args.minUpdatedAt,
+          maxUpdatedAt: args.maxUpdatedAt,
+          pageNumber: args.pageNumber || 1,
+          pageSize: args.pageSize || 50,
+        };
+
+        const apiResponse = await onlyNightApi.getRoomArchiveData(archiveParams);
+
+        if (!apiResponse.success) {
+          return {
+            error: apiResponse.error || "Failed to fetch archive data",
+            message: "לא הצלחתי לשלוף נתונים מהארכיון. ייתכן שה-API לא זמין.",
+          };
+        }
+
+        const items = apiResponse.data?.items || [];
+        if (items.length === 0) {
+          return {
+            message: "לא נמצאו רשומות בארכיון עבור הקריטריונים המבוקשים.",
+            archiveParams,
+          };
+        }
+
+        // Format archive data for AI
+        const formattedItems = items.slice(0, 20).map((item: any) => ({
+          hotelName: item.hotelName || "לא ידוע",
+          checkInDate: item.checkInDate || "לא צוין",
+          checkOutDate: item.checkOutDate || "לא צוין",
+          price: item.price || "N/A",
+          roomBoard: item.roomBoard || "לא צוין",
+          roomCategory: item.roomCategory || "לא צוין",
+          guests: item.guests || "לא צוין",
+          provider: item.provider || "לא ידוע",
+          bookingDate: item.createdAt || item.updatedAt,
+        }));
+
+        return {
+          success: true,
+          totalItems: apiResponse.data?.totalItems || items.length,
+          pageNumber: args.pageNumber || 1,
+          pageSize: args.pageSize || 50,
+          items: formattedItems,
+          archiveParams,
+          summary: onlyNightApi.formatArchiveData(apiResponse.data),
+        };
       }
 
       default:
