@@ -188,6 +188,120 @@ const functions = [
       },
     },
   },
+  {
+    name: "search_web_for_trends",
+    description: "Search the web for tourism trends, hotel demand forecasts, seasonal patterns, and market insights. Use this to find external information about travel trends, events, holidays, and market conditions.",
+    parameters: {
+      type: "object",
+      properties: {
+        query: {
+          type: "string",
+          description: "Search query in Hebrew or English (e.g., 'Tel Aviv hotel demand summer 2025', 'תיירות ישראל חגים 2025')",
+        },
+        location: {
+          type: "string",
+          description: "Specific location/city to focus on (optional)",
+        },
+        timeframe: {
+          type: "string",
+          description: "Time period of interest (e.g., 'summer 2025', 'Passover 2025')",
+        },
+      },
+      required: ["query"],
+    },
+  },
+  {
+    name: "analyze_market_competition",
+    description: "Search for competitive intelligence about hotels in a specific area - their pricing strategies, occupancy rates, new openings, renovations, or market positioning.",
+    parameters: {
+      type: "object",
+      properties: {
+        city: {
+          type: "string",
+          description: "City or area to analyze (e.g., 'Tel Aviv', 'Jerusalem', 'Eilat')",
+        },
+        hotelCategory: {
+          type: "string",
+          description: "Hotel category or star rating (e.g., '5-star', 'boutique', 'luxury')",
+        },
+        aspectToAnalyze: {
+          type: "string",
+          description: "Specific aspect to focus on (e.g., 'pricing', 'occupancy', 'new hotels', 'renovations', 'events')",
+        },
+      },
+      required: ["city"],
+    },
+  },
+  {
+    name: "get_seasonality_insights",
+    description: "Get insights about seasonal patterns, holidays, events, and peak/low seasons that affect hotel demand and pricing. Includes Israeli holidays, international events, school vacations, etc.",
+    parameters: {
+      type: "object",
+      properties: {
+        location: {
+          type: "string",
+          description: "Location to analyze (e.g., 'Israel', 'Tel Aviv', 'Eilat')",
+        },
+        year: {
+          type: "number",
+          description: "Year to analyze (e.g., 2025)",
+        },
+        monthRange: {
+          type: "string",
+          description: "Specific months to focus on (e.g., 'June-August', 'December-January')",
+        },
+      },
+      required: ["location"],
+    },
+  },
+  {
+    name: "fetch_pricing_benchmarks",
+    description: "Fetch industry pricing benchmarks, average daily rates (ADR), revenue per available room (RevPAR), and other hotel performance metrics from web sources.",
+    parameters: {
+      type: "object",
+      properties: {
+        location: {
+          type: "string",
+          description: "Location for benchmarks (e.g., 'Tel Aviv', 'Jerusalem')",
+        },
+        hotelType: {
+          type: "string",
+          description: "Type of hotel (e.g., '4-star', '5-star', 'boutique')",
+        },
+        metric: {
+          type: "string",
+          description: "Specific metric (e.g., 'ADR', 'RevPAR', 'occupancy rate')",
+        },
+      },
+      required: ["location"],
+    },
+  },
+  {
+    name: "check_upcoming_events",
+    description: "Check for upcoming events, conferences, holidays, festivals, or other factors that might affect hotel demand in a specific location and time period.",
+    parameters: {
+      type: "object",
+      properties: {
+        location: {
+          type: "string",
+          description: "Location to check (e.g., 'Tel Aviv', 'Jerusalem', 'Eilat')",
+        },
+        startDate: {
+          type: "string",
+          description: "Start date in YYYY-MM-DD format",
+        },
+        endDate: {
+          type: "string",
+          description: "End date in YYYY-MM-DD format",
+        },
+        eventType: {
+          type: "string",
+          description: "Type of events to focus on (e.g., 'conferences', 'festivals', 'holidays', 'sports')",
+        },
+      },
+      required: ["location"],
+    },
+  },
 ];
 
 // Function to execute AI functions
@@ -462,6 +576,308 @@ async function executeFunction(functionName: string, args: any, userId: number) 
         };
       }
 
+      case "search_web_for_trends": {
+        console.log(`[AI] 🌐 Searching web for trends: ${args.query}`);
+        
+        try {
+          // Build comprehensive search query
+          let searchQuery = args.query;
+          if (args.location) {
+            searchQuery += ` ${args.location}`;
+          }
+          if (args.timeframe) {
+            searchQuery += ` ${args.timeframe}`;
+          }
+
+          // Use WebSearch tool
+          const { WebSearch } = await import('../_core/tools');
+          const searchResults = await WebSearch.search(searchQuery);
+
+          if (!searchResults || searchResults.length === 0) {
+            return {
+              success: false,
+              message: "לא נמצאו תוצאות רלוונטיות. נסה לשנות את שאלת החיפוש.",
+              query: searchQuery,
+            };
+          }
+
+          // Format results for AI
+          const formattedResults = searchResults.slice(0, 5).map((result: any) => ({
+            title: result.title,
+            snippet: result.snippet || result.description,
+            url: result.url,
+            source: result.source || new URL(result.url).hostname,
+          }));
+
+          return {
+            success: true,
+            query: searchQuery,
+            resultsCount: searchResults.length,
+            results: formattedResults,
+            summary: `נמצאו ${searchResults.length} תוצאות רלוונטיות. הנה ${formattedResults.length} התוצאות המובילות:`,
+          };
+        } catch (error: any) {
+          console.error(`[AI] ❌ Web search error:`, error);
+          return {
+            success: false,
+            error: error.message,
+            message: "שגיאה בחיפוש באינטרנט. ייתכן שהשירות אינו זמין כרגע.",
+          };
+        }
+      }
+
+      case "analyze_market_competition": {
+        console.log(`[AI] 🏨 Analyzing market competition for ${args.city}`);
+        
+        try {
+          // Build search queries for different aspects
+          const queries = [
+            `${args.city} hotels ${args.hotelCategory || ''} ${args.aspectToAnalyze || 'market analysis'}`,
+            `${args.city} hotel prices ${args.hotelCategory || ''} 2025`,
+            `${args.city} hotel occupancy rates trends`,
+          ];
+
+          const { WebSearch } = await import('../_core/tools');
+          const allResults: any[] = [];
+
+          // Search for each query
+          for (const query of queries) {
+            try {
+              const results = await WebSearch.search(query);
+              if (results && results.length > 0) {
+                allResults.push(...results.slice(0, 3));
+              }
+            } catch (err) {
+              console.error(`[AI] Search failed for query: ${query}`, err);
+            }
+          }
+
+          if (allResults.length === 0) {
+            return {
+              success: false,
+              message: `לא נמצא מידע תחרותי עבור ${args.city}. נסה עיר אחרת או שנה את הקטגוריה.`,
+              city: args.city,
+            };
+          }
+
+          // Remove duplicates and format
+          const uniqueResults = Array.from(
+            new Map(allResults.map(r => [r.url, r])).values()
+          ).slice(0, 6);
+
+          const formattedResults = uniqueResults.map((result: any) => ({
+            title: result.title,
+            snippet: result.snippet || result.description,
+            url: result.url,
+            relevance: result.relevance || 'high',
+          }));
+
+          return {
+            success: true,
+            city: args.city,
+            category: args.hotelCategory || 'כל הקטגוריות',
+            aspect: args.aspectToAnalyze || 'ניתוח שוק כללי',
+            resultsCount: formattedResults.length,
+            results: formattedResults,
+            summary: `נמצאו ${formattedResults.length} מקורות מידע רלוונטיים לגבי התחרות בשוק המלונאות ב-${args.city}.`,
+          };
+        } catch (error: any) {
+          console.error(`[AI] ❌ Market analysis error:`, error);
+          return {
+            success: false,
+            error: error.message,
+            message: "שגיאה בניתוח השוק. נסה שוב מאוחר יותר.",
+          };
+        }
+      }
+
+      case "get_seasonality_insights": {
+        console.log(`[AI] 📅 Getting seasonality insights for ${args.location}`);
+        
+        try {
+          const year = args.year || new Date().getFullYear();
+          const location = args.location;
+
+          // Build search queries for seasonality
+          const queries = [
+            `${location} tourism peak season ${year}`,
+            `${location} hotel demand patterns ${year}`,
+            `Israel holidays calendar ${year}`,
+          ];
+
+          if (args.monthRange) {
+            queries.push(`${location} ${args.monthRange} ${year} tourism`);
+          }
+
+          const { WebSearch } = await import('../_core/tools');
+          const allResults: any[] = [];
+
+          for (const query of queries) {
+            try {
+              const results = await WebSearch.search(query);
+              if (results && results.length > 0) {
+                allResults.push(...results.slice(0, 2));
+              }
+            } catch (err) {
+              console.error(`[AI] Seasonality search failed:`, err);
+            }
+          }
+
+          // Also add known Israeli holidays context
+          const israeliHolidays = {
+            2025: [
+              { name: "פסח", dates: "12-20 אפריל 2025", type: "חג מרכזי", demand: "גבוה מאוד" },
+              { name: "שבועות", dates: "1-3 יוני 2025", type: "חג", demand: "בינוני-גבוה" },
+              { name: "חופש הגדול", dates: "יולי-אוגוסט 2025", type: "חופשת קיץ", demand: "גבוה מאוד" },
+              { name: "ראש השנה", dates: "22-24 ספטמבר 2025", type: "חג מרכזי", demand: "גבוה" },
+              { name: "יום כיפור", dates: "1-2 אוקטובר 2025", type: "חג", demand: "נמוך" },
+              { name: "סוכות", dates: "6-13 אוקטובר 2025", type: "חג מרכזי", demand: "גבוה" },
+              { name: "חנוכה", dates: "14-22 דצמבר 2025", type: "חג", demand: "בינוני" },
+            ],
+          };
+
+          const formattedResults = allResults.slice(0, 5).map((result: any) => ({
+            title: result.title,
+            snippet: result.snippet || result.description,
+            url: result.url,
+          }));
+
+          return {
+            success: true,
+            location,
+            year,
+            monthRange: args.monthRange,
+            holidays: israeliHolidays[year as keyof typeof israeliHolidays] || [],
+            webResults: formattedResults,
+            summary: `מידע עונתי עבור ${location} בשנת ${year}. נמצאו ${formattedResults.length} מקורות מידע וכן רשימת חגים ישראליים רלוונטיים.`,
+          };
+        } catch (error: any) {
+          console.error(`[AI] ❌ Seasonality insights error:`, error);
+          return {
+            success: false,
+            error: error.message,
+            message: "שגיאה בשליפת מידע עונתי.",
+          };
+        }
+      }
+
+      case "fetch_pricing_benchmarks": {
+        console.log(`[AI] 💰 Fetching pricing benchmarks for ${args.location}`);
+        
+        try {
+          const queries = [
+            `${args.location} hotel ADR average daily rate ${args.hotelType || ''}`,
+            `${args.location} hotel RevPAR revenue per available room`,
+            `${args.location} ${args.hotelType || ''} hotel pricing trends 2025`,
+          ];
+
+          if (args.metric) {
+            queries.unshift(`${args.location} hotel ${args.metric} ${args.hotelType || ''}`);
+          }
+
+          const { WebSearch } = await import('../_core/tools');
+          const allResults: any[] = [];
+
+          for (const query of queries) {
+            try {
+              const results = await WebSearch.search(query);
+              if (results && results.length > 0) {
+                allResults.push(...results.slice(0, 2));
+              }
+            } catch (err) {
+              console.error(`[AI] Benchmark search failed:`, err);
+            }
+          }
+
+          if (allResults.length === 0) {
+            return {
+              success: false,
+              message: `לא נמצאו מדדי תמחור עבור ${args.location}. נסה מיקום אחר או בדוק מקורות מידע מקומיים.`,
+              location: args.location,
+            };
+          }
+
+          const formattedResults = allResults.slice(0, 5).map((result: any) => ({
+            title: result.title,
+            snippet: result.snippet || result.description,
+            url: result.url,
+            source: result.source || new URL(result.url).hostname,
+          }));
+
+          return {
+            success: true,
+            location: args.location,
+            hotelType: args.hotelType || 'כל הסוגים',
+            metric: args.metric || 'מדדים כלליים',
+            resultsCount: formattedResults.length,
+            results: formattedResults,
+            summary: `נמצאו ${formattedResults.length} מקורות מידע לגבי מדדי תמחור ב-${args.location}.`,
+          };
+        } catch (error: any) {
+          console.error(`[AI] ❌ Pricing benchmarks error:`, error);
+          return {
+            success: false,
+            error: error.message,
+            message: "שגיאה בשליפת מדדי תמחור.",
+          };
+        }
+      }
+
+      case "check_upcoming_events": {
+        console.log(`[AI] 🎉 Checking upcoming events for ${args.location}`);
+        
+        try {
+          let searchQuery = `${args.location} upcoming events`;
+          
+          if (args.startDate && args.endDate) {
+            const startYear = args.startDate.substring(0, 4);
+            const startMonth = args.startDate.substring(5, 7);
+            searchQuery += ` ${startYear}`;
+          }
+
+          if (args.eventType) {
+            searchQuery += ` ${args.eventType}`;
+          } else {
+            searchQuery += ` conferences festivals holidays sports`;
+          }
+
+          const { WebSearch } = await import('../_core/tools');
+          const results = await WebSearch.search(searchQuery);
+
+          if (!results || results.length === 0) {
+            return {
+              success: false,
+              message: `לא נמצאו אירועים קרובים עבור ${args.location}. נסה תאריכים אחרים או עיר אחרת.`,
+              location: args.location,
+            };
+          }
+
+          const formattedResults = results.slice(0, 8).map((result: any) => ({
+            title: result.title,
+            snippet: result.snippet || result.description,
+            url: result.url,
+            type: result.type || 'אירוע כללי',
+          }));
+
+          return {
+            success: true,
+            location: args.location,
+            dateRange: args.startDate && args.endDate ? `${args.startDate} עד ${args.endDate}` : 'לא צוין',
+            eventType: args.eventType || 'כל סוגי האירועים',
+            resultsCount: formattedResults.length,
+            events: formattedResults,
+            summary: `נמצאו ${formattedResults.length} אירועים רלוונטיים ב-${args.location} שעלולים להשפיע על הביקוש למלונות.`,
+          };
+        } catch (error: any) {
+          console.error(`[AI] ❌ Events check error:`, error);
+          return {
+            success: false,
+            error: error.message,
+            message: "שגיאה בחיפוש אירועים.",
+          };
+        }
+      }
+
       default:
         return { error: "Unknown function" };
     }
@@ -519,22 +935,53 @@ export const aiRouter = router({
       const messages: any[] = [
         {
           role: "system",
-          content: `You are an AI assistant for a hotel Revenue Management System (RMS). You help hotel managers analyze pricing data, compare with competitors, and make pricing decisions.
+          content: `You are an AI assistant for a hotel Revenue Management System (RMS). You help hotel managers analyze pricing data, compare with competitors, make pricing decisions, and understand market trends.
 
-You have access to the following data:
-- Hotel pricing information from Booking.com
-- Competitor pricing analysis
-- Historical pricing trends
-- Room types: room_only (without breakfast) and with_breakfast
+You have access to the following data sources:
+1. **Internal Database:**
+   - Hotel pricing information from Booking.com
+   - Competitor pricing analysis
+   - Historical pricing trends
+   - Room types: room_only (without breakfast) and with_breakfast
+
+2. **Real-time External Data:**
+   - OnlyNight API for live hotel prices and availability
+   - Historical booking archive data
+
+3. **Market Intelligence (NEW):**
+   - Web search for tourism trends and demand forecasts
+   - Competitive market analysis for specific locations
+   - Seasonal patterns and holiday calendars
+   - Industry pricing benchmarks (ADR, RevPAR, occupancy rates)
+   - Upcoming events that affect hotel demand
 
 When answering questions:
 1. Be concise and data-driven
 2. Always include specific numbers and comparisons
-3. Provide actionable insights
+3. Provide actionable insights based on both internal data and market trends
 4. Format currency as ₪ (Israeli Shekel)
-5. If asked about recommendations, explain your reasoning
+5. If asked about recommendations, explain your reasoning with supporting data
+6. When discussing market trends, cite external sources when available
+7. Consider seasonal factors, holidays, and events in your analysis
+8. Compare internal pricing with market benchmarks when relevant
 
-Use the available functions to query the database when needed.`,
+**How to use your tools:**
+- For historical data: Use query_hotel_prices, compare_competitors, get_price_statistics
+- For live prices: Use search_instant_prices (OnlyNight API)
+- For market trends: Use search_web_for_trends
+- For competition: Use analyze_market_competition
+- For seasonality: Use get_seasonality_insights
+- For benchmarks: Use fetch_pricing_benchmarks
+- For events: Use check_upcoming_events
+
+**Example queries you can handle:**
+- "What are the tourism trends for Tel Aviv summer 2025?"
+- "How does our pricing compare to market benchmarks?"
+- "Are there any major events in Jerusalem next month that could affect demand?"
+- "What's the expected occupancy rate for Eilat during Passover?"
+- "Show me competitive analysis for 5-star hotels in Tel Aviv"
+
+Use the available functions to provide comprehensive, data-backed answers.`,
         },
         ...history.slice(-10).map(m => ({
           role: m.role,
