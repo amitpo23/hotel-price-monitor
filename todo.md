@@ -294,14 +294,14 @@
 - [x] Revenue optimization suggestions
 
 ### 3. Dynamic Pricing Engine
-- [ ] Create pricing rules engine
-- [ ] Demand-based pricing algorithm
-- [ ] Competitor-based pricing algorithm
-- [ ] Time-based pricing rules
-- [ ] Automated price updates
-- [ ] Price change history tracking
-- [ ] Manual override capabilities
-- [ ] Pricing strategy templates
+- [x] Create pricing rules engine
+- [x] Demand-based pricing algorithm
+- [x] Competitor-based pricing algorithm
+- [x] Time-based pricing rules
+- [x] Automated price updates
+- [x] Price change history tracking
+- [x] Manual override capabilities
+- [x] Pricing strategy templates
 
 ### 4. Demand Forecasting
 - [ ] Collect historical occupancy data
