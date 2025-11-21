@@ -596,3 +596,66 @@ export type RateParity = typeof rateParity.$inferSelect;
 export type InsertRateParity = typeof rateParity.$inferInsert;
 export type PricingTemplate = typeof pricingTemplates.$inferSelect;
 export type InsertPricingTemplate = typeof pricingTemplates.$inferInsert;
+
+/**
+ * A/B Testing for Pricing Rules
+ */
+export const abTests = mysqlTable("ab_tests", {
+  id: int("id").autoincrement().primaryKey(),
+  hotelId: int("hotelId").notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  status: mysqlEnum("status", ["draft", "running", "paused", "completed"]).default("draft").notNull(),
+  
+  // Test configuration
+  variantA: text("variantA").notNull(), // JSON: rule configuration
+  variantB: text("variantB").notNull(), // JSON: rule configuration
+  trafficSplit: int("trafficSplit").default(50).notNull(), // Percentage to variant B (0-100)
+  
+  // Date range
+  startDate: varchar("startDate", { length: 10 }).notNull(),
+  endDate: varchar("endDate", { length: 10 }).notNull(),
+  
+  // Results
+  variantARevenue: int("variantARevenue").default(0), // Revenue in cents
+  variantBRevenue: int("variantBRevenue").default(0),
+  variantABookings: int("variantABookings").default(0),
+  variantBBookings: int("variantBBookings").default(0),
+  
+  // Statistical significance
+  pValue: int("pValue"), // p-value * 10000 for storage
+  confidenceLevel: int("confidenceLevel"), // 0-100
+  winner: mysqlEnum("winner", ["none", "variantA", "variantB", "inconclusive"]).default("none"),
+  
+  createdBy: int("createdBy").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ABTest = typeof abTests.$inferSelect;
+export type InsertABTest = typeof abTests.$inferInsert;
+
+/**
+ * A/B Test Events - Track individual bookings/views
+ */
+export const abTestEvents = mysqlTable("ab_test_events", {
+  id: int("id").autoincrement().primaryKey(),
+  testId: int("testId").notNull(),
+  variant: mysqlEnum("variant", ["A", "B"]).notNull(),
+  eventType: mysqlEnum("eventType", ["view", "booking", "revenue"]).notNull(),
+  
+  // Event details
+  checkInDate: varchar("checkInDate", { length: 10 }).notNull(),
+  roomType: mysqlEnum("roomType", ["room_only", "with_breakfast"]).notNull(),
+  price: int("price"), // Price shown/booked in cents
+  revenue: int("revenue"), // Actual revenue in cents
+  
+  // Metadata
+  sessionId: varchar("sessionId", { length: 64 }),
+  userAgent: text("userAgent"),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type ABTestEvent = typeof abTestEvents.$inferSelect;
+export type InsertABTestEvent = typeof abTestEvents.$inferInsert;
