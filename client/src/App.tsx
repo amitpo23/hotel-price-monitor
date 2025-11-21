@@ -9,10 +9,12 @@ import Hotels from "./pages/Hotels";
 import ScanConfigs from "./pages/ScanConfigs";
 import Results from "./pages/Results";
 import Monitoring from "./pages/Monitoring";
+import Login from "./pages/Login";
 
 function Router() {
   return (
     <Switch>
+      <Route path={"/login"} component={Login} />
       <Route path={"/"} component={Home} />
       <Route path={"/hotels"} component={Hotels} />
       <Route path={"/scans"} component={ScanConfigs} />
