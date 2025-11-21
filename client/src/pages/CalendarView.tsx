@@ -17,6 +17,11 @@ interface PriceData {
   isCompetitive: boolean;
   priceGap: number;
   availability: boolean;
+  forecast?: {
+    predictedOccupancy: number;
+    confidence: number;
+    demandLevel: string;
+  } | null;
 }
 
 export default function CalendarView() {

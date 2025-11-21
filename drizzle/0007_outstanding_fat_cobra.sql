@@ -1,0 +1,1 @@
+ALTER TABLE `ab_tests` ADD `testType` enum('pricing','cancellation_policy') DEFAULT 'pricing' NOT NULL;

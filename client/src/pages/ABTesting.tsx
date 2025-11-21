@@ -274,10 +274,22 @@ export default function ABTesting() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            <div>
-              <Label>שם הבדיקה</Label>
-              <Input placeholder="לדוגמה: בדיקת תמחור דינמי לעומת קבוע" />
-            </div>
+          <div>
+            <Label>סוג בדיקה</Label>
+            <Select defaultValue="pricing">
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="pricing">כללי תמחור</SelectItem>
+                <SelectItem value="cancellation_policy">מדיניות ביטולים</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>שם הבדיקה</Label>
+            <Input placeholder="לדוגמה: בדיקת תמחור דינמי לעומת קבוע" />
+          </div>
             <div>
               <Label>תיאור</Label>
               <Textarea placeholder="תיאור מטרת הבדיקה..." />

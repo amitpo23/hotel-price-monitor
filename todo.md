@@ -414,3 +414,30 @@
 - [x] Statistical significance testing
 - [x] Test results dashboard
 - [x] Winner selection and rollout
+
+
+## 🎨 Feature Enhancements (Current Implementation)
+
+### Auto-Suggest Pricing Adjustments
+- [x] Analyze competitor price changes
+- [x] Generate pricing adjustment recommendations
+- [x] Calculate optimal response pricing
+- [x] Show impact predictions
+- [x] One-click apply suggestions
+- [x] Track suggestion acceptance rate
+
+### Demand Forecast in Calendar
+- [x] Integrate ML forecasts into calendar data
+- [x] Display predicted occupancy per date
+- [x] Color-code by demand level
+- [x] Show confidence intervals
+- [x] Tooltip with forecast details
+- [x] Historical vs predicted comparison
+
+### Cancellation Policy A/B Testing
+- [x] Add cancellation policy variants
+- [x] Track booking conversion by policy
+- [x] Measure cancellation rates
+- [x] Calculate net revenue impact
+- [x] Policy comparison dashboard
+- [x] Recommended policy selection

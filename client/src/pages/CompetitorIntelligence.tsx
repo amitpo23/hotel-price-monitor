@@ -66,11 +66,22 @@ export default function CompetitorIntelligence() {
     { hotelId: selectedHotelId!, roomType, days: parseInt(dateRange.replace("d", "")) },
     { enabled: !!selectedHotelId }
   );
+  const suggestionsQuery = trpc.competitorIntelligence.getPricingSuggestions.useQuery(
+    { hotelId: selectedHotelId!, roomType, days: 30, strategy: "balanced" },
+    { enabled: !!selectedHotelId }
+  );
 
   // Mutations
   const markAlertReadMutation = trpc.competitorIntelligence.markAlertRead.useMutation({
     onSuccess: () => {
       alertsQuery.refetch();
+    },
+  });
+
+  const applySuggestionsMutation = trpc.competitorIntelligence.applyPricingSuggestions.useMutation({
+    onSuccess: (data) => {
+      toast.success(`${data.applied} מחירים עודכנו בהצלחה`);
+      suggestionsQuery.refetch();
     },
   });
 
@@ -85,6 +96,7 @@ export default function CompetitorIntelligence() {
   const competitorPrices = competitorPricesQuery.data || [];
   const marketPosition = marketPositionQuery.data;
   const priceGapAnalysis = priceGapAnalysisQuery.data || [];
+  const suggestions = suggestionsQuery.data || [];
 
   // Format currency
   const formatCurrency = (cents: number | null | undefined) => {
@@ -229,6 +241,9 @@ export default function CompetitorIntelligence() {
           <TabsTrigger value="prices">מחירי מתחרים</TabsTrigger>
           <TabsTrigger value="analysis">ניתוח פערים</TabsTrigger>
           <TabsTrigger value="trends">מגמות</TabsTrigger>
+          <TabsTrigger value="suggestions">
+            המלצות ({suggestions.length})
+          </TabsTrigger>
         </TabsList>
 
         {/* Alerts Tab */}
@@ -478,6 +493,104 @@ export default function CompetitorIntelligence() {
                   />
                 </LineChart>
               </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Suggestions Tab */}
+        <TabsContent value="suggestions" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>המלצות התאמת מחיר</CardTitle>
+                  <CardDescription>
+                    התאמות מחיר אוטומטיות מבוססות פעולות מתחרים
+                  </CardDescription>
+                </div>
+                {suggestions.length > 0 && (
+                  <Button
+                    onClick={() => {
+                      const toApply = suggestions
+                        .filter((s: any) => s.expectedImpact.revenueChange > 0)
+                        .slice(0, 10)
+                        .map((s: any) => ({ date: s.date, price: s.suggestedPrice }));
+                      if (toApply.length > 0) {
+                        applySuggestionsMutation.mutate({
+                          hotelId: selectedHotelId!,
+                          roomType,
+                          suggestions: toApply,
+                        });
+                      }
+                    }}
+                  >
+                    החל 10 המלצות מובילות
+                  </Button>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent>
+              {suggestions.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <AlertCircle className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                  <p>אין המלצות זמינות</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {suggestions.map((suggestion: any) => (
+                    <div
+                      key={suggestion.date}
+                      className="flex items-start justify-between p-4 border rounded-lg hover:bg-muted/50"
+                    >
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3">
+                          <span className="font-medium">{suggestion.date}</span>
+                          <Badge
+                            variant={
+                              suggestion.changePercent > 0 ? "default" : "destructive"
+                            }
+                          >
+                            {suggestion.changePercent > 0 ? "+" : ""}
+                            {suggestion.changePercent.toFixed(1)}%
+                          </Badge>
+                          <Badge variant="outline">
+                            ביטחון: {suggestion.confidence}%
+                          </Badge>
+                        </div>
+                        <p className="text-sm mt-2">{suggestion.reason}</p>
+                        <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
+                          <span>
+                            מחיר נוכחי: {formatCurrency(suggestion.currentPrice)} →{" "}
+                            {formatCurrency(suggestion.suggestedPrice)}
+                          </span>
+                          <span>
+                            צפי שינוי בהכנסות: +
+                            {suggestion.expectedImpact.revenueChange}%
+                          </span>
+                          <span>
+                            דירוג: #{suggestion.competitorContext.yourRank} מתוך{" "}
+                            {suggestion.competitorContext.totalCompetitors}
+                          </span>
+                        </div>
+                      </div>
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          applySuggestionsMutation.mutate({
+                            hotelId: selectedHotelId!,
+                            roomType,
+                            suggestions: [
+                              { date: suggestion.date, price: suggestion.suggestedPrice },
+                            ],
+                          });
+                        }}
+                      >
+                        החל
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

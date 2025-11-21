@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "../_core/trpc";
 import * as db from "../db";
+import { generatePricingSuggestions, applyPricingSuggestions } from "../services/pricingSuggestions";
 
 export const competitorIntelligenceRouter = router({
   // Get competitor alerts
@@ -274,6 +275,61 @@ export const competitorIntelligenceRouter = router({
           });
         }
       }
+
+      return result;
+    }),
+
+  // Get pricing suggestions
+  getPricingSuggestions: protectedProcedure
+    .input(
+      z.object({
+        hotelId: z.number(),
+        roomType: z.enum(["room_only", "with_breakfast"]),
+        days: z.number().default(30),
+        strategy: z.enum(["aggressive", "balanced", "conservative"]).default("balanced"),
+      })
+    )
+    .query(async ({ input }) => {
+      const { hotelId, roomType, days, strategy } = input;
+
+      const startDate = new Date();
+      const endDate = new Date();
+      endDate.setDate(endDate.getDate() + days);
+
+      const suggestions = await generatePricingSuggestions(
+        hotelId,
+        startDate.toISOString().split("T")[0],
+        endDate.toISOString().split("T")[0],
+        roomType,
+        strategy
+      );
+
+      return suggestions;
+    }),
+
+  // Apply pricing suggestions
+  applyPricingSuggestions: protectedProcedure
+    .input(
+      z.object({
+        hotelId: z.number(),
+        roomType: z.enum(["room_only", "with_breakfast"]),
+        suggestions: z.array(
+          z.object({
+            date: z.string(),
+            price: z.number(),
+          })
+        ),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { hotelId, roomType, suggestions } = input;
+
+      const result = await applyPricingSuggestions(
+        hotelId,
+        suggestions,
+        roomType,
+        ctx.user.id
+      );
 
       return result;
     }),

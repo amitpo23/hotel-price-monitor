@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "../_core/trpc";
 import * as db from "../db";
+import { generateDemandForecast } from "../services/demandForecasting";
 
 export const calendarRouter = router({
   // Get price data for a specific month
@@ -39,6 +40,27 @@ export const calendarRouter = router({
         roomType
       );
       
+      // Get demand forecasts
+      let forecasts = await db.getDemandForecastsForDateRange(
+        hotelId,
+        startDateStr,
+        endDateStr
+      );
+      
+      // If no forecasts, try to generate them
+      if (forecasts.length === 0) {
+        try {
+          await generateDemandForecast(hotelId, startDateStr, endDateStr);
+          forecasts = await db.getDemandForecastsForDateRange(
+            hotelId,
+            startDateStr,
+            endDateStr
+          );
+        } catch (error) {
+          console.error("Failed to generate forecasts:", error);
+        }
+      }
+      
       // Combine data
       const daysInMonth = endDate.getDate();
       const result = [];
@@ -49,6 +71,7 @@ export const calendarRouter = router({
         
         const priceData = prices.find((p: any) => p.checkInDate === dateStr);
         const competitorData = competitorPrices.find((c: any) => c.checkInDate === dateStr);
+        const forecastData = forecasts.find((f: any) => f.forecastDate === dateStr);
         
         const price = priceData?.price || null;
         const competitorAvgPrice = competitorData?.avgPrice || null;
@@ -68,6 +91,11 @@ export const calendarRouter = router({
           priceGap,
           isCompetitive,
           availability: priceData?.isAvailable !== 0,
+          forecast: forecastData ? {
+            predictedOccupancy: forecastData.predictedOccupancy,
+            confidence: forecastData.confidence,
+            demandLevel: forecastData.demandLevel,
+          } : null,
         });
       }
       

@@ -607,9 +607,12 @@ export const abTests = mysqlTable("ab_tests", {
   description: text("description"),
   status: mysqlEnum("status", ["draft", "running", "paused", "completed"]).default("draft").notNull(),
   
+  // Test type
+  testType: mysqlEnum("testType", ["pricing", "cancellation_policy"]).default("pricing").notNull(),
+  
   // Test configuration
-  variantA: text("variantA").notNull(), // JSON: rule configuration
-  variantB: text("variantB").notNull(), // JSON: rule configuration
+  variantA: text("variantA").notNull(), // JSON: rule/policy configuration
+  variantB: text("variantB").notNull(), // JSON: rule/policy configuration
   trafficSplit: int("trafficSplit").default(50).notNull(), // Percentage to variant B (0-100)
   
   // Date range
@@ -659,3 +662,39 @@ export const abTestEvents = mysqlTable("ab_test_events", {
 
 export type ABTestEvent = typeof abTestEvents.$inferSelect;
 export type InsertABTestEvent = typeof abTestEvents.$inferInsert;
+
+/**
+ * Cancellation Policies
+ */
+export const cancellationPolicies = mysqlTable("cancellation_policies", {
+  id: int("id").autoincrement().primaryKey(),
+  hotelId: int("hotelId").notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
+  
+  // Policy details
+  freeCancel: mysqlEnum("freeCancel", ["yes", "no"]).default("yes").notNull(),
+  freeCancelDays: int("freeCancelDays"), // Days before check-in
+  cancellationFee: int("cancellationFee"), // Fee in cents or percentage
+  feeType: mysqlEnum("feeType", ["fixed", "percentage"]).default("fixed"),
+  
+  // Refund policy
+  refundable: mysqlEnum("refundable", ["full", "partial", "none"]).default("full").notNull(),
+  refundPercentage: int("refundPercentage"), // 0-100
+  
+  // Flexibility level
+  flexibilityLevel: mysqlEnum("flexibilityLevel", ["very_flexible", "flexible", "moderate", "strict", "very_strict"]).default("moderate").notNull(),
+  
+  // Booking window
+  minAdvanceBooking: int("minAdvanceBooking"), // Days
+  maxAdvanceBooking: int("maxAdvanceBooking"), // Days
+  
+  // Status
+  isActive: int("isActive").default(1).notNull(),
+  isDefault: int("isDefault").default(0).notNull(),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type CancellationPolicy = typeof cancellationPolicies.$inferSelect;
+export type InsertCancellationPolicy = typeof cancellationPolicies.$inferInsert;
