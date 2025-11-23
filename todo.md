@@ -257,4 +257,15 @@
 - [x] Ensure only Google OAuth is initialized
 - [x] Remove OAUTH_SERVER_URL dependency
 - [ ] Test deployment
+- [x] Push to Git
+
+
+## 🚨 NEW: Railway Deployment - Invalid URL Error
+
+- [x] Investigate TypeError: Invalid URL in production build
+- [x] Check Vite build configuration
+- [x] Verify static asset paths
+- [x] Check environment variables in Railway
+- [x] Fix build process (replaced import.meta.dirname with fileURLToPath)
 - [ ] Push to Git
+- [ ] Test deployment
