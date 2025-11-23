@@ -285,3 +285,11 @@
 - [x] Update all references in code
 - [ ] Push to Git
 - [ ] User updates variable names in Railway
+
+
+## 🚨 Railway - Corepack/pnpm Error
+
+- [ ] Fix corepack keyid error
+- [ ] Install pnpm directly without corepack
+- [ ] Update nixpacks.toml
+- [ ] Push to Git
