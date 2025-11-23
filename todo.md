@@ -277,3 +277,11 @@
 - [ ] Secrets should be environment variables, not files
 - [ ] Push to Git
 - [ ] Verify build succeeds
+
+
+## 🔧 Fix Railway - Rename Environment Variables
+
+- [x] Rename GOOGLE_CLIENT_SECRET to avoid Railway secret file detection
+- [x] Update all references in code
+- [ ] Push to Git
+- [ ] User updates variable names in Railway
