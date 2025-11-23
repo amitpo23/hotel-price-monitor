@@ -40,9 +40,5 @@ export default defineConfig({
       strict: true,
       deny: ["**/.*"],
     },
-    watch: {
-      usePolling: true,
-      interval: 1000,
-    },
   },
 });

@@ -31,7 +31,7 @@ export default function PricingDashboard() {
   const [selectedRoomType, setSelectedRoomType] = useState<"room_only" | "with_breakfast">("room_only");
 
   // Queries
-  const scanConfigsQuery = trpc.scans.configs.list.useQuery();
+  const scanConfigsQuery = trpc.scans.getScanConfigs.useQuery();
   const recommendationsQuery = trpc.pricing.getRecommendations.useQuery(
     { scanConfigId: selectedConfigId!, roomType: selectedRoomType },
     { enabled: !!selectedConfigId }
@@ -125,7 +125,7 @@ export default function PricingDashboard() {
               <SelectValue placeholder="בחר קונפיגורציה" />
             </SelectTrigger>
             <SelectContent>
-              {scanConfigsQuery.data?.map((config: any) => (
+              {scanConfigsQuery.data?.map((config) => (
                 <SelectItem key={config.id} value={config.id.toString()}>
                   {config.name}
                 </SelectItem>

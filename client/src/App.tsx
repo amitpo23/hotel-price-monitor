@@ -11,11 +11,6 @@ import Results from "./pages/Results";
 import Monitoring from "./pages/Monitoring";
 import AIChat from "./pages/AIChat";
 import PricingDashboard from "./pages/PricingDashboard";
-import CalendarView from "./pages/CalendarView";
-import RevenueManagement from "./pages/RevenueManagement";
-import DynamicPricing from "./pages/DynamicPricing";
-import CompetitorIntelligence from "./pages/CompetitorIntelligence";
-import ABTesting from "./pages/ABTesting";
 
 function Router() {
   return (
@@ -27,11 +22,6 @@ function Router() {
       <Route path={"/monitoring"} component={Monitoring} />
       <Route path={"/ai-chat"} component={AIChat} />
       <Route path={"/pricing"} component={PricingDashboard} />
-      <Route path={"/calendar"} component={CalendarView} />
-      <Route path={"/revenue"} component={RevenueManagement} />
-      <Route path={"/dynamic-pricing"} component={DynamicPricing} />
-      <Route path={"/competitor-intelligence"} component={CompetitorIntelligence} />
-      <Route path={"/ab-testing"} component={ABTesting} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>

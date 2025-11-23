@@ -1,9 +1,13 @@
 import "dotenv/config";
+import 'dotenv/config';
 import express from "express";
 import { createServer } from "http";
 import net from "net";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
-import { registerOAuthRoutes } from "./oauth";
+import passport from 'passport';
+import session from 'express-session';
+import { configureGoogleAuth } from './googleAuth';
+import { registerGoogleAuthRoutes } from './googleAuthRoutes';
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
@@ -33,8 +37,30 @@ async function startServer() {
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
-  // OAuth callback under /api/oauth/callback
-  registerOAuthRoutes(app);
+  
+  // Session configuration
+  app.use(
+    session({
+      secret: process.env.JWT_SECRET || 'your-secret-key',
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      },
+    })
+  );
+  
+  // Initialize Passport
+  app.use(passport.initialize());
+  app.use(passport.session());
+  
+  // Configure Google OAuth
+  configureGoogleAuth();
+  
+  // Google OAuth routes under /api/auth/google
+  registerGoogleAuthRoutes(app);
   // tRPC API
   app.use(
     "/api/trpc",

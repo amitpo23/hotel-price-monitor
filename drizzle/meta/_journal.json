@@ -26,36 +26,8 @@
     {
       "idx": 3,
       "version": "5",
-      "when": 1763717788704,
-      "tag": "0003_shiny_monster_badoon",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "5",
-      "when": 1763719745820,
-      "tag": "0004_fine_spot",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "5",
-      "when": 1763720734124,
-      "tag": "0005_cynical_catseye",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "5",
-      "when": 1763721199642,
-      "tag": "0006_shallow_doctor_spectrum",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "5",
-      "when": 1763721220334,
-      "tag": "0007_outstanding_fat_cobra",
+      "when": 1763883358464,
+      "tag": "0003_lonely_stryfe",
       "breakpoints": true
     }
   ]
