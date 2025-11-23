@@ -1,5 +1,5 @@
 import * as db from "../db";
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import { promisify } from 'util';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 import { sendScanReportAuto } from "./emailService";
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 interface ScanProgress {
   scanId: number;
@@ -53,8 +53,17 @@ export async function executeScan(configId: number): Promise<ScanProgress> {
     console.log(`[ScanService]    ${idx + 1}. ${hotel.name} (${hotel.category})`);
   });
 
-  // Parse room types
-  const roomTypes = JSON.parse(config.roomTypes) as ("room_only" | "with_breakfast")[];
+  // Parse room types with error handling
+  let roomTypes: ("room_only" | "with_breakfast")[];
+  try {
+    roomTypes = JSON.parse(config.roomTypes) as ("room_only" | "with_breakfast")[];
+    if (!Array.isArray(roomTypes) || roomTypes.length === 0) {
+      throw new Error("Invalid room types configuration");
+    }
+  } catch (e) {
+    console.error(`[ScanService] ❌ ERROR: Failed to parse room types: ${config.roomTypes}`);
+    throw new Error("Invalid room types configuration in database");
+  }
   console.log(`[ScanService] 🛏️  Room types to scan: ${roomTypes.join(", ")}`);
 
   // Create scan record
@@ -99,12 +108,20 @@ export async function executeScan(configId: number): Promise<ScanProgress> {
           const startDateStr = startDate.toISOString().split('T')[0];
           const roomTypesJson = JSON.stringify(roomTypes);
 
-          const command = `python3 "${pythonScript}" "${hotel.bookingUrl}" "${startDateStr}" ${config.daysForward} '${roomTypesJson}'`;
+          // Use execFile with arguments array to prevent command injection
+          const args = [
+            pythonScript,
+            hotel.bookingUrl,
+            startDateStr,
+            String(config.daysForward),
+            roomTypesJson
+          ];
 
           console.log(`[ScanService] 🐍 Executing Python scraper...`);
-          console.log(`[ScanService] Command: ${command}`);
+          console.log(`[ScanService] Script: python3 ${pythonScript}`);
+          console.log(`[ScanService] Args: [url, date, days, roomTypes]`);
 
-          const { stdout, stderr } = await execAsync(command, { maxBuffer: 10 * 1024 * 1024 });
+          const { stdout, stderr } = await execFileAsync('python3', args, { maxBuffer: 10 * 1024 * 1024 });
 
           if (stderr) {
             console.log(`[ScanService] 📋 Python scraper logs:\n${stderr}`);

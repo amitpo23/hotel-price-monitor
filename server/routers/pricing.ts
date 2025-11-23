@@ -249,12 +249,12 @@ async function detectMarketChanges(
   }, {} as Record<number, PriceData[]>);
 
   for (const [hotelId, currentPrices] of Object.entries(currentByHotel)) {
-    const prevPrices = previousByHotel[hotelId] || [];
-    
+    const prevPrices = previousByHotel[parseInt(hotelId)] || [];
+
     if (prevPrices.length === 0) continue;
 
-    const avgCurrent = currentPrices.reduce((sum, p) => sum + p.price, 0) / currentPrices.length;
-    const avgPrevious = prevPrices.reduce((sum, p) => sum + p.price, 0) / prevPrices.length;
+    const avgCurrent = currentPrices.reduce((sum: number, p: PriceData) => sum + p.price, 0) / currentPrices.length;
+    const avgPrevious = prevPrices.reduce((sum: number, p: PriceData) => sum + p.price, 0) / prevPrices.length;
     
     const change = ((avgCurrent - avgPrevious) / avgPrevious) * 100;
 

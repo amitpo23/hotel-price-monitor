@@ -35,14 +35,14 @@ export const scansRouter = router({
     create: protectedProcedure
       .input(
         z.object({
-          name: z.string().min(1, "Configuration name is required"),
-          targetHotelId: z.number(),
-          daysForward: z.number().default(60),
-          roomTypes: z.array(z.enum(["room_only", "with_breakfast"])),
-          hotelIds: z.array(z.number()),
+          name: z.string().min(1, "Configuration name is required").max(255),
+          targetHotelId: z.number().int().positive(),
+          daysForward: z.number().int().positive().min(1).max(365).default(60),
+          roomTypes: z.array(z.enum(["room_only", "with_breakfast"])).min(1).max(2),
+          hotelIds: z.array(z.number().int().positive()).min(1).max(100),
           schedule: z.object({
-            cronExpression: z.string(),
-            timezone: z.string().default("Asia/Jerusalem"),
+            cronExpression: z.string().min(9).max(100).regex(/^[\d\s\*\/\-\,]+$/, "Invalid cron expression"),
+            timezone: z.string().max(50).default("Asia/Jerusalem"),
             isEnabled: z.boolean().default(true),
           }).optional(),
         })
@@ -83,11 +83,11 @@ export const scansRouter = router({
     update: protectedProcedure
       .input(
         z.object({
-          id: z.number(),
-          name: z.string().optional(),
-          targetHotelId: z.number().optional(),
-          daysForward: z.number().optional(),
-          roomTypes: z.array(z.enum(["room_only", "with_breakfast"])).optional(),
+          id: z.number().int().positive(),
+          name: z.string().min(1).max(255).optional(),
+          targetHotelId: z.number().int().positive().optional(),
+          daysForward: z.number().int().positive().min(1).max(365).optional(),
+          roomTypes: z.array(z.enum(["room_only", "with_breakfast"])).min(1).max(2).optional(),
           isActive: z.boolean().optional(),
         })
       )
@@ -108,7 +108,7 @@ export const scansRouter = router({
 
     // Delete scan configuration
     delete: protectedProcedure
-      .input(z.object({ id: z.number() }))
+      .input(z.object({ id: z.number().int().positive() }))
       .mutation(async ({ input }) => {
         await db.deleteScanConfig(input.id);
         return { success: true };
@@ -119,7 +119,7 @@ export const scansRouter = router({
   execute: router({
     // Manually trigger a scan
     start: protectedProcedure
-      .input(z.object({ configId: z.number() }))
+      .input(z.object({ configId: z.number().int().positive() }))
       .mutation(async ({ input }) => {
         try {
           console.log(`[API] Starting scan for config ${input.configId}`);
@@ -135,14 +135,14 @@ export const scansRouter = router({
 
     // Get scan status
     getStatus: protectedProcedure
-      .input(z.object({ scanId: z.number() }))
+      .input(z.object({ scanId: z.number().int().positive() }))
       .query(async ({ input }) => {
         return getScanProgress(input.scanId);
       }),
 
     // List scans for a configuration
     listForConfig: protectedProcedure
-      .input(z.object({ configId: z.number(), limit: z.number().default(10) }))
+      .input(z.object({ configId: z.number().int().positive(), limit: z.number().int().positive().min(1).max(100).default(10) }))
       .query(async ({ input }) => {
         return db.getScansForConfig(input.configId, input.limit);
       }),
@@ -152,21 +152,21 @@ export const scansRouter = router({
   results: router({
     // Get results for a specific scan
     getByScanId: protectedProcedure
-      .input(z.object({ scanId: z.number() }))
+      .input(z.object({ scanId: z.number().int().positive() }))
       .query(async ({ input }) => {
         return db.getScanResultsWithHotels(input.scanId);
       }),
 
     // Get latest results for a configuration
     getLatest: protectedProcedure
-      .input(z.object({ configId: z.number() }))
+      .input(z.object({ configId: z.number().int().positive() }))
       .query(async ({ input }) => {
         return db.getLatestScanResultsForConfig(input.configId);
       }),
 
     // Get aggregated statistics
     getStats: protectedProcedure
-      .input(z.object({ configId: z.number() }))
+      .input(z.object({ configId: z.number().int().positive() }))
       .query(async ({ input }) => {
         const results = await db.getLatestScanResultsForConfig(input.configId);
         
@@ -206,9 +206,9 @@ export const scansRouter = router({
     update: protectedProcedure
       .input(
         z.object({
-          configId: z.number(),
-          cronExpression: z.string(),
-          timezone: z.string().default("Asia/Jerusalem"),
+          configId: z.number().int().positive(),
+          cronExpression: z.string().min(9).max(100).regex(/^[\d\s\*\/\-\,]+$/, "Invalid cron expression"),
+          timezone: z.string().max(50).default("Asia/Jerusalem"),
           isEnabled: z.boolean(),
         })
       )
@@ -237,7 +237,7 @@ export const scansRouter = router({
 
     // Toggle schedule enabled/disabled
     toggle: protectedProcedure
-      .input(z.object({ configId: z.number() }))
+      .input(z.object({ configId: z.number().int().positive() }))
       .mutation(async ({ input }) => {
         const schedule = await db.getScanScheduleByConfigId(input.configId);
         if (!schedule) {
