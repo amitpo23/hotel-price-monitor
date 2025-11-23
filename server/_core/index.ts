@@ -6,8 +6,7 @@ import net from "net";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import passport from 'passport';
 import session from 'express-session';
-import { configureGoogleAuth } from './googleAuth';
-import { registerGoogleAuthRoutes } from './googleAuthRoutes';
+import { configureGoogleAuth, registerGoogleAuthRoutes } from './googleAuth';
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
@@ -38,25 +37,20 @@ async function startServer() {
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   
-  // Session configuration
-  app.use(
-    session({
-      secret: process.env.JWT_SECRET || 'your-secret-key',
-      resave: false,
-      saveUninitialized: false,
-      cookie: {
-        secure: process.env.NODE_ENV === 'production',
-        httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      },
-    })
-  );
+  // Session middleware for Google OAuth
+  app.use(session({
+    secret: process.env.SESSION_SECRET || 'hotel-price-monitor-secret-key-change-in-production',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
+  }));
   
-  // Initialize Passport
+  // Initialize Passport and configure Google OAuth
   app.use(passport.initialize());
   app.use(passport.session());
-  
-  // Configure Google OAuth
   configureGoogleAuth();
   
   // Google OAuth routes under /api/auth/google

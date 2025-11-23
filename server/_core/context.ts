@@ -11,7 +11,7 @@ export async function createContext(
   opts: CreateExpressContextOptions
 ): Promise<TrpcContext> {
   // Get user from Passport session
-  const user = (opts.req.user as User) || null;
+  const user = (opts.req as any).user || null;
 
   return {
     req: opts.req,

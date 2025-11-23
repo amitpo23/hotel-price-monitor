@@ -1,6 +1,7 @@
+// server/_core/googleAuth.ts
 /**
  * Google OAuth 2.0 Authentication
- * Replaces Manus OAuth with Google authentication
+ * Replaces Manus OAuth with Google OAuth for independent authentication
  */
 
 import passport from 'passport';
@@ -38,26 +39,27 @@ export function configureGoogleAuth() {
           const googleId = profile.id;
           const email = profile.emails?.[0]?.value || '';
           const name = profile.displayName || '';
+          const loginMethod = 'google';
 
           // Upsert user in database
           await upsertUser({
             openId: googleId,
-            name,
             email,
-            loginMethod: 'google',
+            name,
+            loginMethod,
             lastSignedIn: new Date(),
           });
 
-          // Get user from database
+          // Fetch user from database
           const user = await getUserByOpenId(googleId);
-
+          
           if (!user) {
-            return done(new Error('Failed to create user'));
+            return done(new Error('Failed to create/fetch user'));
           }
 
           return done(null, user);
         } catch (error) {
-          console.error('[GoogleAuth] Error during authentication:', error);
+          console.error('[GoogleAuth] Error in strategy callback:', error);
           return done(error as Error);
         }
       }
@@ -81,18 +83,39 @@ export function configureGoogleAuth() {
 }
 
 /**
- * Middleware to check if user is authenticated
+ * Register Google OAuth routes
  */
-export function requireAuth(req: Request, res: Response, next: NextFunction) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.status(401).json({ error: 'Unauthorized' });
-}
+export function registerGoogleAuthRoutes(app: any) {
+  // Initiate Google OAuth flow
+  app.get('/api/auth/google', passport.authenticate('google', {
+    scope: ['profile', 'email']
+  }));
 
-/**
- * Get current user from request
- */
-export function getCurrentUser(req: Request) {
-  return req.user || null;
+  // Google OAuth callback
+  app.get('/api/auth/google/callback',
+    passport.authenticate('google', { failureRedirect: '/login?error=auth_failed' }),
+    (req: Request, res: Response) => {
+      // Successful authentication, redirect to home
+      res.redirect('/');
+    }
+  );
+
+  // Get current user
+  app.get('/api/auth/me', (req: Request, res: Response) => {
+    if (req.isAuthenticated() && req.user) {
+      res.json(req.user);
+    } else {
+      res.status(401).json({ error: 'Not authenticated' });
+    }
+  });
+
+  // Logout
+  app.post('/api/auth/logout', (req: Request, res: Response) => {
+    req.logout((err) => {
+      if (err) {
+        return res.status(500).json({ error: 'Logout failed' });
+      }
+      res.json({ success: true });
+    });
+  });
 }
