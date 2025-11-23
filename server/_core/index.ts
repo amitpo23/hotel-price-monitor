@@ -42,6 +42,35 @@ setInterval(() => {
   });
 }, 60000);
 
+// CORS middleware - restrict to allowed origins
+function corsMiddleware(req: Request, res: Response, next: NextFunction) {
+  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [];
+  const origin = req.headers.origin;
+
+  // In development, allow localhost
+  const isDev = process.env.NODE_ENV === 'development';
+  const isLocalhost = origin?.includes('localhost') || origin?.includes('127.0.0.1');
+
+  if (isDev && isLocalhost) {
+    res.setHeader('Access-Control-Allow-Origin', origin || '*');
+  } else if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Max-Age', '86400');
+
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    res.status(204).end();
+    return;
+  }
+
+  next();
+}
+
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
     const server = net.createServer();
@@ -67,6 +96,9 @@ async function startServer() {
 
   // Trust proxy for accurate IP detection behind reverse proxies
   app.set('trust proxy', 1);
+
+  // CORS - must be before other middleware
+  app.use(corsMiddleware);
 
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));

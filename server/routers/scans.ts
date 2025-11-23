@@ -122,14 +122,13 @@ export const scansRouter = router({
       .input(z.object({ configId: z.number().int().positive() }))
       .mutation(async ({ input }) => {
         try {
-          console.log(`[API] Starting scan for config ${input.configId}`);
           // Execute scan in background
           const progress = await executeScan(input.configId);
-          console.log(`[API] Scan started successfully, scanId: ${progress.scanId}`);
           return { success: true, scanId: progress.scanId };
         } catch (error) {
-          console.error(`[API] Error starting scan:`, error);
-          throw new Error(`Failed to start scan: ${error instanceof Error ? error.message : String(error)}`);
+          console.error(`[API] Scan start failed for config ${input.configId}`);
+          // Return generic error message to client
+          throw new Error("Failed to start scan. Please check your configuration and try again.");
         }
       }),
 
