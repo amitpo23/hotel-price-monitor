@@ -10,10 +10,10 @@ import type { Request, Response, NextFunction } from 'express';
 import { upsertUser, getUserByOpenId } from '../db';
 import { ENV } from './env';
 
-// Google OAuth credentials
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '664887167219-edmv61m0o464915fl9r4bheddb9vdtgv.apps.googleusercontent.com';
-const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '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';
-const GOOGLE_CALLBACK_URL = process.env.GOOGLE_CALLBACK_URL || 'http://localhost:3000/api/auth/google/callback';
+// Google OAuth credentials from ENV
+const GOOGLE_CLIENT_ID = ENV.googleClientId || '664887167219-edmv61m0o464915fl9r4bheddb9vdtgv.apps.googleusercontent.com';
+const GOOGLE_CLIENT_SECRET = ENV.googleClientSecret || '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';
+const GOOGLE_CALLBACK_URL = ENV.googleCallbackUrl || 'http://localhost:3000/api/auth/google/callback';
 
 /**
  * Configure Passport with Google Strategy

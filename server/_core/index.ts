@@ -9,6 +9,7 @@ import session from 'express-session';
 import { configureGoogleAuth, registerGoogleAuthRoutes } from './googleAuth';
 import { appRouter } from "../routers";
 import { createContext } from "./context";
+import { ENV } from './env';
 import { serveStatic, setupVite } from "./vite";
 
 function isPortAvailable(port: number): Promise<boolean> {
@@ -39,7 +40,7 @@ async function startServer() {
   
   // Session middleware for Google OAuth
   app.use(session({
-    secret: process.env.SESSION_SECRET || 'hotel-price-monitor-secret-key-change-in-production',
+    secret: ENV.sessionSecret,
     resave: false,
     saveUninitialized: false,
     cookie: {

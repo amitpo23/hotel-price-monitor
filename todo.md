@@ -249,3 +249,12 @@
 - [x] Test complete system (code verified, file descriptor issue is environment-specific)
 - [ ] Save final checkpoint (IN PROGRESS)
 - [ ] Prepare Railway deployment guide (NEXT)
+
+
+## 🚨 URGENT: Fix Railway Deployment Error
+
+- [x] Find and remove all Manus OAuth code (oauth.ts, sdk.ts)
+- [x] Ensure only Google OAuth is initialized
+- [x] Remove OAUTH_SERVER_URL dependency
+- [ ] Test deployment
+- [ ] Push to Git
