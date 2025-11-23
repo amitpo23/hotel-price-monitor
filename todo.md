@@ -269,3 +269,11 @@
 - [x] Fix build process (replaced import.meta.dirname with fileURLToPath)
 - [ ] Push to Git
 - [ ] Test deployment
+
+
+## 🚨 Railway Build Error - nixpacks.toml
+
+- [ ] Fix nixpacks.toml - remove secrets file copying
+- [ ] Secrets should be environment variables, not files
+- [ ] Push to Git
+- [ ] Verify build succeeds
