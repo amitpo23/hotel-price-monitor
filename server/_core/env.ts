@@ -4,7 +4,12 @@ export const ENV = {
   databaseUrl: process.env.DATABASE_URL ?? "",
   oAuthServerUrl: process.env.OAUTH_SERVER_URL ?? "",
   ownerOpenId: process.env.OWNER_OPEN_ID ?? "",
+  ownerEmail: process.env.OWNER_EMAIL ?? "", // Alternative: set owner by email
   isProduction: process.env.NODE_ENV === "production",
   forgeApiUrl: process.env.BUILT_IN_FORGE_API_URL ?? "",
   forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? "",
+  // Google OAuth
+  googleClientId: process.env.GOOGLE_CLIENT_ID ?? "",
+  googleClientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET ?? "",
+  googleCallbackUrl: process.env.GOOGLE_CALLBACK_URL ?? "",
 };

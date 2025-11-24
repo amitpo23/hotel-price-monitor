@@ -1,20 +1,27 @@
 export { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 
-export const APP_TITLE = import.meta.env.VITE_APP_TITLE || "App";
+export const APP_TITLE = import.meta.env.VITE_APP_TITLE || "Hotel Price Monitor";
 
-export const APP_LOGO = "https://placehold.co/128x128/E1E7EF/1F2937?text=App";
+export const APP_LOGO = "https://placehold.co/128x128/E1E7EF/1F2937?text=HPM";
+
+// Google OAuth login URL - uses server-side redirect
+export const getGoogleLoginUrl = () => {
+  return `${window.location.origin}/api/oauth/google`;
+};
 
 // Generate login URL at runtime so redirect URI reflects the current origin.
+// Supports both Google OAuth and Manus OAuth
 export const getLoginUrl = () => {
+  // Check if Google OAuth should be used (no Manus OAuth configured)
   const oauthPortalUrl = import.meta.env.VITE_OAUTH_PORTAL_URL;
   const appId = import.meta.env.VITE_APP_ID;
 
-  // Return empty string if OAuth not configured (prevents Invalid URL error)
+  // If Manus OAuth not configured, use Google OAuth
   if (!oauthPortalUrl || !appId) {
-    console.warn("OAuth not configured: VITE_OAUTH_PORTAL_URL or VITE_APP_ID missing");
-    return "#";
+    return getGoogleLoginUrl();
   }
 
+  // Manus OAuth flow
   const redirectUri = `${window.location.origin}/api/oauth/callback`;
   const state = btoa(redirectUri);
 
