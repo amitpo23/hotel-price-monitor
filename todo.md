@@ -301,3 +301,10 @@
 - [ ] Update package.json scripts to use npm
 - [ ] Push to Git
 - [ ] Verify deployment succeeds
+
+
+## 🚨 npm Dependency Conflict
+
+- [ ] Add --legacy-peer-deps to npm install
+- [ ] Push to Git
+- [ ] Verify deployment succeeds
