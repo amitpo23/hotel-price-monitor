@@ -293,3 +293,11 @@
 - [ ] Install pnpm directly without corepack
 - [ ] Update nixpacks.toml
 - [ ] Push to Git
+
+
+## 🔄 Switch from pnpm to npm for Railway
+
+- [ ] Update nixpacks.toml to use npm
+- [ ] Update package.json scripts to use npm
+- [ ] Push to Git
+- [ ] Verify deployment succeeds
