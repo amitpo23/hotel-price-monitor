@@ -34,6 +34,21 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 async function startServer() {
   const app = express();
   const server = createServer(app);
+  
+  // Health check endpoint - MUST be first, before any middleware
+  app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+  });
+  
+  // Root endpoint for Railway healthcheck
+  app.get('/', (req, res, next) => {
+    // If this is a healthcheck (not HTML request), respond quickly
+    if (req.headers['user-agent']?.includes('Railway')) {
+      return res.status(200).send('OK');
+    }
+    next();
+  });
+  
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
@@ -79,9 +94,20 @@ async function startServer() {
   }
 
   // Listen on 0.0.0.0 for Railway/Docker compatibility
-  const host = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
+  // Always use 0.0.0.0 in Railway/production environments
+  const host = '0.0.0.0';
+  
+  console.log('=================================');
+  console.log('Starting server...');
+  console.log(`Environment: ${process.env.NODE_ENV}`);
+  console.log(`Port: ${port}`);
+  console.log(`Host: ${host}`);
+  console.log('=================================');
+  
   server.listen(port, host, () => {
-    console.log(`Server running on http://${host}:${port}/`);
+    console.log(`✅ Server successfully started!`);
+    console.log(`🌐 Server running on http://${host}:${port}/`);
+    console.log(`📍 Healthcheck endpoint: http://${host}:${port}/`);
   });
 }
 
