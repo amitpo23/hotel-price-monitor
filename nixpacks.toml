@@ -2,14 +2,14 @@
 nixPkgs = ["nodejs_20", "python311", "python311Packages.pip"]
 
 [phases.install]
-cmds = [
-    "npm install -g pnpm@10",
-    "pnpm install --frozen-lockfile",
-    "pnpm exec playwright install --with-deps chromium"
-]
+cmds = ["npm install -g pnpm"]
 
 [phases.build]
-cmds = ["pnpm build"]
+cmds = [
+    "pnpm install",
+    "pnpm exec playwright install --with-deps chromium",
+    "pnpm build"
+]
 
 [start]
 cmd = "pnpm start"
