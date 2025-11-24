@@ -308,3 +308,11 @@
 - [ ] Add --legacy-peer-deps to npm install
 - [ ] Push to Git
 - [ ] Verify deployment succeeds
+
+
+## 🔄 Migrate from pnpm-lock to package-lock
+
+- [ ] Delete pnpm-lock.yaml
+- [ ] Generate package-lock.json with npm
+- [ ] Push to Git
+- [ ] Verify deployment succeeds
