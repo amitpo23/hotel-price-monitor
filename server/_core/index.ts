@@ -107,6 +107,11 @@ async function startServer() {
   // Rate limiting: 100 requests per minute for API routes
   app.use("/api", rateLimiter(100, 60000));
 
+  // Simple healthcheck endpoint (no database required)
+  app.get("/health", (req, res) => {
+    res.status(200).json({ status: "ok", timestamp: Date.now() });
+  });
+
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
   // tRPC API
