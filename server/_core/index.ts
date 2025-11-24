@@ -78,8 +78,10 @@ async function startServer() {
     console.log(`Port ${preferredPort} is busy, using port ${port} instead`);
   }
 
-  server.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}/`);
+  // Listen on 0.0.0.0 for Railway/Docker compatibility
+  const host = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
+  server.listen(port, host, () => {
+    console.log(`Server running on http://${host}:${port}/`);
   });
 }
 
