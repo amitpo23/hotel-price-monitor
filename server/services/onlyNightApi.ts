@@ -38,6 +38,65 @@ interface RoomArchiveParams {
   pageSize?: number;
 }
 
+interface InsertOpportunityParams {
+  hotelId: number;
+  startDateStr: string;
+  endDateStr: string;
+  boardId: number;
+  categoryId: number;
+  buyPrice: number;
+  pushPrice: number;
+  maxRooms: number;
+  ratePlanCode?: string;
+  invTypeCode?: string;
+  reservationFullName?: string;
+  stars?: number;
+  destinationId?: number;
+  locationRange?: number;
+  providerId?: number;
+  userId: number;
+  paxAdults: number;
+  paxChildren?: number[];
+}
+
+interface RoomsActiveParams {
+  startDate?: string;
+  endDate?: string;
+  hotelName?: string;
+  hotelStars?: number;
+  city?: string;
+  roomBoard?: string;
+  roomCategory?: string;
+  provider?: string;
+}
+
+interface DashboardParams {
+  hotelStars?: number;
+  city?: string;
+  hotelName?: string;
+  reservationMonthDate?: string;
+  checkInMonthDate?: string;
+  provider?: string;
+}
+
+interface OpportunitiesByBackOfficeParams {
+  id: number;
+}
+
+interface OpportunitiesHotelSearchParams {
+  opportiunityId: number;
+}
+
+interface ManualBookParams {
+  opportiunityId: number;
+  code: string;
+}
+
+interface UpdatePushPriceParams {
+  preBookId: number;
+  pushPrice: number;
+}
+
 interface OnlyNightResponse<T = any> {
   success: boolean;
   data?: T;
@@ -251,6 +310,303 @@ class OnlyNightApiService {
     });
 
     return formatted;
+  }
+
+  /**
+   * Insert a hotel opportunity (booking opportunity)
+   * 
+   * @param params - Opportunity parameters
+   * @returns Created opportunity details
+   */
+  async insertOpportunity(params: InsertOpportunityParams): Promise<OnlyNightResponse> {
+    try {
+      console.log('[OnlyNight API] ➕ Inserting opportunity:', params);
+
+      const response = await this.client.post('/api/hotels/InsertOpportunity', params);
+
+      console.log('[OnlyNight API] ✅ Opportunity inserted successfully');
+
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error: any) {
+      console.error('[OnlyNight API] ❌ Insert opportunity failed:', error.message);
+      return {
+        success: false,
+        error: error.message || 'Failed to insert opportunity',
+      };
+    }
+  }
+
+  /**
+   * Get active rooms (current bookings)
+   * 
+   * @param params - Filter parameters
+   * @returns List of active room bookings
+   */
+  async getRoomsActive(params: RoomsActiveParams = {}): Promise<OnlyNightResponse> {
+    try {
+      console.log('[OnlyNight API] 🏨 Getting active rooms:', params);
+
+      const response = await this.client.post('/api/hotels/GetRoomsActive', params);
+
+      console.log(`[OnlyNight API] ✅ Found ${response.data?.length || 0} active rooms`);
+
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error: any) {
+      console.error('[OnlyNight API] ❌ Get active rooms failed:', error.message);
+      return {
+        success: false,
+        error: error.message || 'Failed to get active rooms',
+      };
+    }
+  }
+
+  /**
+   * Get sold rooms (sales records)
+   * 
+   * @param params - Filter parameters
+   * @returns List of sold rooms
+   */
+  async getRoomsSales(params: RoomsActiveParams = {}): Promise<OnlyNightResponse> {
+    try {
+      console.log('[OnlyNight API] 💰 Getting rooms sales:', params);
+
+      const response = await this.client.post('/api/hotels/GetRoomsSales', params);
+
+      console.log(`[OnlyNight API] ✅ Found ${response.data?.length || 0} sales records`);
+
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error: any) {
+      console.error('[OnlyNight API] ❌ Get rooms sales failed:', error.message);
+      return {
+        success: false,
+        error: error.message || 'Failed to get rooms sales',
+      };
+    }
+  }
+
+  /**
+   * Get cancelled rooms
+   * 
+   * @param params - Filter parameters
+   * @returns List of cancelled bookings
+   */
+  async getRoomsCancel(params: RoomsActiveParams = {}): Promise<OnlyNightResponse> {
+    try {
+      console.log('[OnlyNight API] ❌ Getting cancelled rooms:', params);
+
+      const response = await this.client.post('/api/hotels/GetRoomsCancel', params);
+
+      console.log(`[OnlyNight API] ✅ Found ${response.data?.length || 0} cancelled rooms`);
+
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error: any) {
+      console.error('[OnlyNight API] ❌ Get cancelled rooms failed:', error.message);
+      return {
+        success: false,
+        error: error.message || 'Failed to get cancelled rooms',
+      };
+    }
+  }
+
+  /**
+   * Get dashboard info (summary statistics)
+   * 
+   * @param params - Filter parameters
+   * @returns Dashboard data with statistics
+   */
+  async getDashboardInfo(params: DashboardParams = {}): Promise<OnlyNightResponse> {
+    try {
+      console.log('[OnlyNight API] 📊 Getting dashboard info:', params);
+
+      const response = await this.client.post('/api/hotels/GetDashboardInfo', params);
+
+      console.log('[OnlyNight API] ✅ Dashboard info retrieved');
+
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error: any) {
+      console.error('[OnlyNight API] ❌ Get dashboard info failed:', error.message);
+      return {
+        success: false,
+        error: error.message || 'Failed to get dashboard info',
+      };
+    }
+  }
+
+  /**
+   * Get opportunities (booking opportunities list)
+   * 
+   * @param params - Filter parameters
+   * @returns List of opportunities
+   */
+  async getOpportunities(params: DashboardParams = {}): Promise<OnlyNightResponse> {
+    try {
+      console.log('[OnlyNight API] 🎯 Getting opportunities:', params);
+
+      const response = await this.client.post('/api/hotels/GetOpportunities', params);
+
+      console.log(`[OnlyNight API] ✅ Found ${response.data?.length || 0} opportunities`);
+
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error: any) {
+      console.error('[OnlyNight API] ❌ Get opportunities failed:', error.message);
+      return {
+        success: false,
+        error: error.message || 'Failed to get opportunities',
+      };
+    }
+  }
+
+  /**
+   * Get opportunities by back office ID
+   * 
+   * @param params - ID parameter
+   * @returns Opportunity details
+   */
+  async getOpportunitiesByBackOfficeId(params: OpportunitiesByBackOfficeParams): Promise<OnlyNightResponse> {
+    try {
+      console.log('[OnlyNight API] 🔍 Getting opportunities by back office ID:', params);
+
+      const response = await this.client.post('/api/hotels/GetOpportiunitiesByBackOfficeId', params);
+
+      console.log('[OnlyNight API] ✅ Opportunities retrieved');
+
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error: any) {
+      console.error('[OnlyNight API] ❌ Get opportunities by ID failed:', error.message);
+      return {
+        success: false,
+        error: error.message || 'Failed to get opportunities by ID',
+      };
+    }
+  }
+
+  /**
+   * Get opportunities hotel search
+   * 
+   * @param params - Opportunity ID
+   * @returns Search results for opportunity
+   */
+  async getOpportunitiesHotelSearch(params: OpportunitiesHotelSearchParams): Promise<OnlyNightResponse> {
+    try {
+      console.log('[OnlyNight API] 🔎 Getting opportunities hotel search:', params);
+
+      const response = await this.client.post('/api/hotels/GetOpportiunitiesHotelSearch', params);
+
+      console.log('[OnlyNight API] ✅ Hotel search completed');
+
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error: any) {
+      console.error('[OnlyNight API] ❌ Opportunities hotel search failed:', error.message);
+      return {
+        success: false,
+        error: error.message || 'Failed to search hotel opportunities',
+      };
+    }
+  }
+
+  /**
+   * Manual book (confirm booking)
+   * 
+   * @param params - Booking parameters
+   * @returns Booking confirmation
+   */
+  async manualBook(params: ManualBookParams): Promise<OnlyNightResponse> {
+    try {
+      console.log('[OnlyNight API] ✅ Manual booking:', params);
+
+      const response = await this.client.post('/api/hotels/ManualBook', params);
+
+      console.log('[OnlyNight API] ✅ Booking confirmed');
+
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error: any) {
+      console.error('[OnlyNight API] ❌ Manual book failed:', error.message);
+      return {
+        success: false,
+        error: error.message || 'Failed to confirm booking',
+      };
+    }
+  }
+
+  /**
+   * Update active room push price
+   * 
+   * @param params - Price update parameters
+   * @returns Update confirmation
+   */
+  async updatePushPrice(params: UpdatePushPriceParams): Promise<OnlyNightResponse> {
+    try {
+      console.log('[OnlyNight API] 💵 Updating push price:', params);
+
+      const response = await this.client.post('/api/hotels/UpdateRoomsActivePushPrice', params);
+
+      console.log('[OnlyNight API] ✅ Push price updated');
+
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error: any) {
+      console.error('[OnlyNight API] ❌ Update push price failed:', error.message);
+      return {
+        success: false,
+        error: error.message || 'Failed to update push price',
+      };
+    }
+  }
+
+  /**
+   * Cancel active room booking
+   * 
+   * @param prebookId - Booking ID to cancel
+   * @returns Cancellation confirmation
+   */
+  async cancelRoomActive(prebookId: number): Promise<OnlyNightResponse> {
+    try {
+      console.log('[OnlyNight API] 🚫 Cancelling room:', prebookId);
+
+      const response = await this.client.delete(`/api/hotels/CancelRoomActive?prebookId=${prebookId}`);
+
+      console.log('[OnlyNight API] ✅ Room cancelled successfully');
+
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error: any) {
+      console.error('[OnlyNight API] ❌ Cancel room failed:', error.message);
+      return {
+        success: false,
+        error: error.message || 'Failed to cancel room',
+      };
+    }
   }
 }
 

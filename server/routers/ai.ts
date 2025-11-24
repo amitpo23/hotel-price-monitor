@@ -302,6 +302,257 @@ const functions = [
       required: ["location"],
     },
   },
+  // ==================== OnlyNight Booking Functions ====================
+  {
+    name: "insert_hotel_opportunity",
+    description: "Insert a hotel booking opportunity to reserve rooms. This is step 1 of the booking flow. Use this to create a new booking opportunity for specific dates and room requirements.",
+    parameters: {
+      type: "object",
+      properties: {
+        hotelId: {
+          type: "number",
+          description: "Hotel ID from search results",
+        },
+        startDateStr: {
+          type: "string",
+          description: "Check-in date in YYYY-MM-DD format",
+        },
+        endDateStr: {
+          type: "string",
+          description: "Check-out date in YYYY-MM-DD format",
+        },
+        boardId: {
+          type: "number",
+          description: "Board type ID (meal plan)",
+        },
+        categoryId: {
+          type: "number",
+          description: "Room category ID",
+        },
+        buyPrice: {
+          type: "number",
+          description: "Purchase price",
+        },
+        pushPrice: {
+          type: "number",
+          description: "Selling price",
+        },
+        maxRooms: {
+          type: "number",
+          description: "Maximum number of rooms to book (1-30)",
+        },
+        paxAdults: {
+          type: "number",
+          description: "Number of adults",
+        },
+        paxChildren: {
+          type: "array",
+          items: { type: "number" },
+          description: "Ages of children (optional)",
+        },
+        reservationFullName: {
+          type: "string",
+          description: "Guest full name (optional)",
+        },
+      },
+      required: ["hotelId", "startDateStr", "endDateStr", "boardId", "categoryId", "buyPrice", "pushPrice", "maxRooms", "paxAdults"],
+    },
+  },
+  {
+    name: "get_active_rooms",
+    description: "Get currently active (booked) rooms. Use this to see current bookings and their status.",
+    parameters: {
+      type: "object",
+      properties: {
+        startDate: {
+          type: "string",
+          description: "Start date filter (ISO datetime)",
+        },
+        endDate: {
+          type: "string",
+          description: "End date filter (ISO datetime)",
+        },
+        hotelName: {
+          type: "string",
+          description: "Filter by hotel name",
+        },
+        city: {
+          type: "string",
+          description: "Filter by city",
+        },
+        hotelStars: {
+          type: "number",
+          description: "Filter by hotel star rating",
+        },
+      },
+    },
+  },
+  {
+    name: "get_sales_records",
+    description: "Get historical sales records (sold rooms). Use this to analyze past bookings and revenue.",
+    parameters: {
+      type: "object",
+      properties: {
+        startDate: {
+          type: "string",
+          description: "Start date filter",
+        },
+        endDate: {
+          type: "string",
+          description: "End date filter",
+        },
+        hotelName: {
+          type: "string",
+          description: "Filter by hotel name",
+        },
+        city: {
+          type: "string",
+          description: "Filter by city",
+        },
+      },
+    },
+  },
+  {
+    name: "get_cancelled_rooms",
+    description: "Get cancelled bookings. Use this to analyze cancellation patterns.",
+    parameters: {
+      type: "object",
+      properties: {
+        startDate: {
+          type: "string",
+          description: "Start date filter",
+        },
+        endDate: {
+          type: "string",
+          description: "End date filter",
+        },
+        hotelName: {
+          type: "string",
+          description: "Filter by hotel name",
+        },
+      },
+    },
+  },
+  {
+    name: "get_dashboard_stats",
+    description: "Get dashboard statistics including bookings, revenue, and performance metrics.",
+    parameters: {
+      type: "object",
+      properties: {
+        city: {
+          type: "string",
+          description: "Filter by city",
+        },
+        hotelName: {
+          type: "string",
+          description: "Filter by hotel name",
+        },
+        hotelStars: {
+          type: "number",
+          description: "Filter by star rating",
+        },
+        reservationMonthDate: {
+          type: "string",
+          description: "Filter by reservation month",
+        },
+      },
+    },
+  },
+  {
+    name: "get_opportunities_list",
+    description: "Get list of booking opportunities (pending bookings that haven't been confirmed yet).",
+    parameters: {
+      type: "object",
+      properties: {
+        city: {
+          type: "string",
+          description: "Filter by city",
+        },
+        hotelName: {
+          type: "string",
+          description: "Filter by hotel name",
+        },
+      },
+    },
+  },
+  {
+    name: "get_opportunity_details",
+    description: "Get detailed information about a specific opportunity by its back office ID. This is step 2 of booking flow.",
+    parameters: {
+      type: "object",
+      properties: {
+        id: {
+          type: "number",
+          description: "Back office ID of the opportunity",
+        },
+      },
+      required: ["id"],
+    },
+  },
+  {
+    name: "search_opportunity_hotels",
+    description: "Search for available hotels for a specific opportunity. This is step 3 of booking flow.",
+    parameters: {
+      type: "object",
+      properties: {
+        opportiunityId: {
+          type: "number",
+          description: "Opportunity ID to search hotels for",
+        },
+      },
+      required: ["opportiunityId"],
+    },
+  },
+  {
+    name: "confirm_booking",
+    description: "Confirm and finalize a booking (manual book). This is step 4 (final step) of booking flow.",
+    parameters: {
+      type: "object",
+      properties: {
+        opportiunityId: {
+          type: "number",
+          description: "Opportunity ID to confirm",
+        },
+        code: {
+          type: "string",
+          description: "Confirmation code from hotel search",
+        },
+      },
+      required: ["opportiunityId", "code"],
+    },
+  },
+  {
+    name: "update_room_price",
+    description: "Update the push (selling) price for an active room booking.",
+    parameters: {
+      type: "object",
+      properties: {
+        preBookId: {
+          type: "number",
+          description: "Pre-booking ID",
+        },
+        pushPrice: {
+          type: "number",
+          description: "New selling price",
+        },
+      },
+      required: ["preBookId", "pushPrice"],
+    },
+  },
+  {
+    name: "cancel_room_booking",
+    description: "Cancel an active room booking by its pre-booking ID.",
+    parameters: {
+      type: "object",
+      properties: {
+        prebookId: {
+          type: "number",
+          description: "Pre-booking ID to cancel",
+        },
+      },
+      required: ["prebookId"],
+    },
+  },
 ];
 
 // Function to execute AI functions
@@ -878,6 +1129,401 @@ async function executeFunction(functionName: string, args: any, userId: number) 
         }
       }
 
+      // ==================== OnlyNight Booking Functions ====================
+      
+      case "insert_hotel_opportunity": {
+        try {
+          const onlyNightApi = getOnlyNightApi();
+          
+          const oppParams = {
+            hotelId: args.hotelId,
+            startDateStr: args.startDateStr,
+            endDateStr: args.endDateStr,
+            boardId: args.boardId,
+            categoryId: args.categoryId,
+            buyPrice: args.buyPrice,
+            pushPrice: args.pushPrice,
+            maxRooms: args.maxRooms,
+            userId: userId,
+            paxAdults: args.paxAdults,
+            paxChildren: args.paxChildren || [],
+            reservationFullName: args.reservationFullName || "",
+            ratePlanCode: args.ratePlanCode,
+            invTypeCode: args.invTypeCode,
+            stars: args.stars,
+            destinationId: args.destinationId,
+            locationRange: args.locationRange,
+            providerId: args.providerId,
+          };
+
+          const apiResponse = await onlyNightApi.insertOpportunity(oppParams);
+
+          if (!apiResponse.success) {
+            return {
+              error: apiResponse.error,
+              message: "לא הצלחתי ליצור הזדמנות הזמנה.",
+            };
+          }
+
+          return {
+            success: true,
+            data: apiResponse.data,
+            message: `הזדמנות הזמנה נוצרה בהצלחה למלון ${args.hotelId} לתאריכים ${args.startDateStr} - ${args.endDateStr}`,
+          };
+        } catch (error: any) {
+          console.error(`[AI] ❌ Insert opportunity error:`, error);
+          return {
+            success: false,
+            error: error.message,
+            message: "שגיאה ביצירת הזדמנות הזמנה.",
+          };
+        }
+      }
+
+      case "get_active_rooms": {
+        try {
+          const onlyNightApi = getOnlyNightApi();
+          
+          const params = {
+            startDate: args.startDate,
+            endDate: args.endDate,
+            hotelName: args.hotelName,
+            city: args.city,
+            hotelStars: args.hotelStars,
+            roomBoard: args.roomBoard,
+            roomCategory: args.roomCategory,
+            provider: args.provider,
+          };
+
+          const apiResponse = await onlyNightApi.getRoomsActive(params);
+
+          if (!apiResponse.success) {
+            return {
+              error: apiResponse.error,
+              message: "לא הצלחתי לשלוף חדרים פעילים.",
+            };
+          }
+
+          const rooms = apiResponse.data || [];
+          return {
+            success: true,
+            totalRooms: rooms.length,
+            rooms: rooms.slice(0, 20), // Limit to 20 results
+            message: `נמצאו ${rooms.length} חדרים פעילים`,
+          };
+        } catch (error: any) {
+          console.error(`[AI] ❌ Get active rooms error:`, error);
+          return {
+            success: false,
+            error: error.message,
+            message: "שגיאה בשליפת חדרים פעילים.",
+          };
+        }
+      }
+
+      case "get_sales_records": {
+        try {
+          const onlyNightApi = getOnlyNightApi();
+          
+          const params = {
+            startDate: args.startDate,
+            endDate: args.endDate,
+            hotelName: args.hotelName,
+            city: args.city,
+            hotelStars: args.hotelStars,
+            roomBoard: args.roomBoard,
+            roomCategory: args.roomCategory,
+            provider: args.provider,
+          };
+
+          const apiResponse = await onlyNightApi.getRoomsSales(params);
+
+          if (!apiResponse.success) {
+            return {
+              error: apiResponse.error,
+              message: "לא הצלחתי לשלוף רשומות מכירות.",
+            };
+          }
+
+          const sales = apiResponse.data || [];
+          return {
+            success: true,
+            totalSales: sales.length,
+            sales: sales.slice(0, 20),
+            message: `נמצאו ${sales.length} רשומות מכירה`,
+          };
+        } catch (error: any) {
+          console.error(`[AI] ❌ Get sales records error:`, error);
+          return {
+            success: false,
+            error: error.message,
+            message: "שגיאה בשליפת רשומות מכירות.",
+          };
+        }
+      }
+
+      case "get_cancelled_rooms": {
+        try {
+          const onlyNightApi = getOnlyNightApi();
+          
+          const params = {
+            startDate: args.startDate,
+            endDate: args.endDate,
+            hotelName: args.hotelName,
+            city: args.city,
+            roomBoard: args.roomBoard,
+            roomCategory: args.roomCategory,
+          };
+
+          const apiResponse = await onlyNightApi.getRoomsCancel(params);
+
+          if (!apiResponse.success) {
+            return {
+              error: apiResponse.error,
+              message: "לא הצלחתי לשלוף רשומות ביטולים.",
+            };
+          }
+
+          const cancelled = apiResponse.data || [];
+          return {
+            success: true,
+            totalCancelled: cancelled.length,
+            cancelled: cancelled.slice(0, 20),
+            message: `נמצאו ${cancelled.length} ביטולים`,
+          };
+        } catch (error: any) {
+          console.error(`[AI] ❌ Get cancelled rooms error:`, error);
+          return {
+            success: false,
+            error: error.message,
+            message: "שגיאה בשליפת רשומות ביטולים.",
+          };
+        }
+      }
+
+      case "get_dashboard_stats": {
+        try {
+          const onlyNightApi = getOnlyNightApi();
+          
+          const params = {
+            city: args.city,
+            hotelName: args.hotelName,
+            hotelStars: args.hotelStars,
+            reservationMonthDate: args.reservationMonthDate,
+            checkInMonthDate: args.checkInMonthDate,
+            provider: args.provider,
+          };
+
+          const apiResponse = await onlyNightApi.getDashboardInfo(params);
+
+          if (!apiResponse.success) {
+            return {
+              error: apiResponse.error,
+              message: "לא הצלחתי לשלוף נתוני דשבורד.",
+            };
+          }
+
+          return {
+            success: true,
+            data: apiResponse.data,
+            message: "נתוני דשבורד נשלפו בהצלחה",
+          };
+        } catch (error: any) {
+          console.error(`[AI] ❌ Get dashboard stats error:`, error);
+          return {
+            success: false,
+            error: error.message,
+            message: "שגיאה בשליפת נתוני דשבורד.",
+          };
+        }
+      }
+
+      case "get_opportunities_list": {
+        try {
+          const onlyNightApi = getOnlyNightApi();
+          
+          const params = {
+            city: args.city,
+            hotelName: args.hotelName,
+            hotelStars: args.hotelStars,
+          };
+
+          const apiResponse = await onlyNightApi.getOpportunities(params);
+
+          if (!apiResponse.success) {
+            return {
+              error: apiResponse.error,
+              message: "לא הצלחתי לשלוף הזדמנויות.",
+            };
+          }
+
+          const opportunities = apiResponse.data || [];
+          return {
+            success: true,
+            totalOpportunities: opportunities.length,
+            opportunities: opportunities.slice(0, 20),
+            message: `נמצאו ${opportunities.length} הזדמנויות`,
+          };
+        } catch (error: any) {
+          console.error(`[AI] ❌ Get opportunities list error:`, error);
+          return {
+            success: false,
+            error: error.message,
+            message: "שגיאה בשליפת הזדמנויות.",
+          };
+        }
+      }
+
+      case "get_opportunity_details": {
+        try {
+          const onlyNightApi = getOnlyNightApi();
+          
+          const apiResponse = await onlyNightApi.getOpportunitiesByBackOfficeId({ id: args.id });
+
+          if (!apiResponse.success) {
+            return {
+              error: apiResponse.error,
+              message: "לא הצלחתי לשלוף פרטי הזדמנות.",
+            };
+          }
+
+          return {
+            success: true,
+            data: apiResponse.data,
+            message: `פרטי הזדמנות ${args.id} נשלפו בהצלחה`,
+          };
+        } catch (error: any) {
+          console.error(`[AI] ❌ Get opportunity details error:`, error);
+          return {
+            success: false,
+            error: error.message,
+            message: "שגיאה בשליפת פרטי הזדמנות.",
+          };
+        }
+      }
+
+      case "search_opportunity_hotels": {
+        try {
+          const onlyNightApi = getOnlyNightApi();
+          
+          const apiResponse = await onlyNightApi.getOpportunitiesHotelSearch({ 
+            opportiunityId: args.opportiunityId 
+          });
+
+          if (!apiResponse.success) {
+            return {
+              error: apiResponse.error,
+              message: "לא הצלחתי לחפש מלונות זמינים להזדמנות.",
+            };
+          }
+
+          const hotels = apiResponse.data || [];
+          return {
+            success: true,
+            totalHotels: hotels.length,
+            hotels: hotels.slice(0, 20),
+            message: `נמצאו ${hotels.length} מלונות זמינים`,
+          };
+        } catch (error: any) {
+          console.error(`[AI] ❌ Search opportunity hotels error:`, error);
+          return {
+            success: false,
+            error: error.message,
+            message: "שגיאה בחיפוש מלונות להזדמנות.",
+          };
+        }
+      }
+
+      case "confirm_booking": {
+        try {
+          const onlyNightApi = getOnlyNightApi();
+          
+          const apiResponse = await onlyNightApi.manualBook({
+            opportiunityId: args.opportiunityId,
+            code: args.code,
+          });
+
+          if (!apiResponse.success) {
+            return {
+              error: apiResponse.error,
+              message: "לא הצלחתי לאשר את ההזמנה.",
+            };
+          }
+
+          return {
+            success: true,
+            data: apiResponse.data,
+            message: `ההזמנה אושרה בהצלחה! מספר הזדמנות: ${args.opportiunityId}`,
+          };
+        } catch (error: any) {
+          console.error(`[AI] ❌ Confirm booking error:`, error);
+          return {
+            success: false,
+            error: error.message,
+            message: "שגיאה באישור ההזמנה.",
+          };
+        }
+      }
+
+      case "update_room_price": {
+        try {
+          const onlyNightApi = getOnlyNightApi();
+          
+          const apiResponse = await onlyNightApi.updatePushPrice({
+            preBookId: args.preBookId,
+            pushPrice: args.pushPrice,
+          });
+
+          if (!apiResponse.success) {
+            return {
+              error: apiResponse.error,
+              message: "לא הצלחתי לעדכן את מחיר המכירה.",
+            };
+          }
+
+          return {
+            success: true,
+            data: apiResponse.data,
+            message: `מחיר המכירה עודכן בהצלחה ל-₪${args.pushPrice}`,
+          };
+        } catch (error: any) {
+          console.error(`[AI] ❌ Update room price error:`, error);
+          return {
+            success: false,
+            error: error.message,
+            message: "שגיאה בעדכון מחיר המכירה.",
+          };
+        }
+      }
+
+      case "cancel_room_booking": {
+        try {
+          const onlyNightApi = getOnlyNightApi();
+          
+          const apiResponse = await onlyNightApi.cancelRoomActive(args.prebookId);
+
+          if (!apiResponse.success) {
+            return {
+              error: apiResponse.error,
+              message: "לא הצלחתי לבטל את ההזמנה.",
+            };
+          }
+
+          return {
+            success: true,
+            data: apiResponse.data,
+            message: `ההזמנה בוטלה בהצלחה. מספר הזמנה: ${args.prebookId}`,
+          };
+        } catch (error: any) {
+          console.error(`[AI] ❌ Cancel booking error:`, error);
+          return {
+            success: false,
+            error: error.message,
+            message: "שגיאה בביטול ההזמנה.",
+          };
+        }
+      }
+
       default:
         return { error: "Unknown function" };
     }
@@ -974,12 +1620,31 @@ When answering questions:
 - For benchmarks: Use fetch_pricing_benchmarks
 - For events: Use check_upcoming_events
 
+**OnlyNight Booking Flow (NEW):**
+You now have full booking capabilities! Follow this 4-step flow:
+1. insert_hotel_opportunity - Create booking opportunity
+2. get_opportunity_details - Get opportunity back office ID
+3. search_opportunity_hotels - Search available hotels for the opportunity
+4. confirm_booking - Finalize the booking with confirmation code
+
+**Additional booking tools:**
+- get_active_rooms - View current bookings
+- get_sales_records - View sales history
+- get_cancelled_rooms - View cancellations
+- cancel_room_booking - Cancel a booking
+- update_room_price - Update selling price
+- get_dashboard_stats - View statistics
+- get_opportunities_list - List all opportunities
+
 **Example queries you can handle:**
 - "What are the tourism trends for Tel Aviv summer 2025?"
 - "How does our pricing compare to market benchmarks?"
 - "Are there any major events in Jerusalem next month that could affect demand?"
 - "What's the expected occupancy rate for Eilat during Passover?"
 - "Show me competitive analysis for 5-star hotels in Tel Aviv"
+- "Book me a hotel in Tel Aviv for next week" (NEW - Full booking support!)
+- "Show me my active bookings" (NEW)
+- "Cancel booking ID 12345" (NEW)
 
 Use the available functions to provide comprehensive, data-backed answers.`,
         },
