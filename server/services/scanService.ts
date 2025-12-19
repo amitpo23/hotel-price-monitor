@@ -8,6 +8,7 @@ import { dirname } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 import { sendScanReportAuto } from "./emailService";
+import { scrapeWithApify, isApifyConfigured } from './apifyScraper';
 
 const execAsync = promisify(exec);
 
@@ -169,6 +170,29 @@ export async function executeScan(configId: number): Promise<ScanProgress> {
             const errorMessage = error instanceof Error ? error.message : String(error);
             const stackTrace = error instanceof Error ? error.stack : undefined;
 
+
+          // Try Apify fallback if configured
+                  if (isApifyConfigured()) {
+                            console.log(`[ScanService] 🔄 Primary scraper failed, attempting Apify fallback...`);
+                            try {
+                                        const apifyResults = await scrapeWithApify(
+                                                      hotel.bookingUrl,
+                                                      startDate,
+                                                      config.daysForward,
+                                                      roomTypes
+                                                    );
+
+                                        // Use Apify results instead
+                                        results = apifyResults;
+                                        console.log(`[ScanService] ✅ Apify fallback succeeded with ${results.length} results`);
+                                      } catch (apifyError) {
+                                        console.error(`[ScanService] ❌ Apify fallback also failed:`, apifyError);
+                                        // Continue with original error handling
+                                      }
+                          }
+
+                  // Only record error if Apify fallback didn't provide results
+                  if (!results || results.length === 0) {
             // Determine error type based on error message
             let errorType: 'timeout' | 'network_error' | 'parsing_failed' | 'other' = 'other';
             if (errorMessage.includes('timeout') || errorMessage.includes('ETIMEDOUT')) {
@@ -193,6 +217,7 @@ export async function executeScan(configId: number): Promise<ScanProgress> {
                 roomTypes,
               }),
             });
+                          }
             console.log(`[ScanService] 📝 Error logged to monitoring database`);
           } catch (logError) {
             console.error(`[ScanService] Warning: Failed to log error:`, logError);
